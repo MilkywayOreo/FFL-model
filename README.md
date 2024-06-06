@@ -1,1 +1,1 @@
-# Modelling behavior of Fast Forward Loop in cellular systems 
+# Modelling behavior of Fast Forward Loop from biological cells
