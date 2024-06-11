@@ -2,54 +2,83 @@ import numpy as np
 from scipy.integrate import solve_ivp
 import matplotlib.pyplot as plt
 
-
-# parameter
-H = 2 # Hill coeficient
-b_y, b_z = 1
-a_y, a_z = 1 # a_deg + a_dil
-B_y, B_z = 0 # Basal expression of y,z
-
-# chemical equilibrium constants
-K_xy 
-K_xz
-K_yz
+# parameters
+H = 2  # Hill coefficient
+betay = 1
+betaz = 1
+alphay = 1
+alphaz = 1  # a_deg + a_dil
+By = 0  # Basal expression of y, z
+Bz = 0
+Kxy = 1  # equilibrium constants
+Kxz = 1
+Kyz = 1
 
 # simple Activator
-def activator(u, K, H):
-    return (u/K)**H / (1 + (u/K)**H) 
-# simple Repressor
-def repressor(u, K, H):
-	return 1 / (1 + (u/K)**H) 
+def f_activator(u, K, H):
+    return (u/K)**H / (1 + (u/K)**H)
 
-# competive Activator G_z
-def fc_act(u, Ku, Kv, v, H):
-    return (u / Ku)**H / (1 + (u/Ku)**H + (v/Kv)**H)
-# competive Repressor G_z
-def fc_rep(u, Ku, Kv, v, H):
-    return 1 / (1 + (u/Ku)**H + (v/Kv)**H)
+# Zeitschalter Sx
+def Sx(t):
+    if 3 < t < 10:
+        return 1
+    else:
+        return 0
 
-def dYdt():
-    X_star_effect = Sx * X_star  # Ein- und Ausschalten von Sx
-    if input("X -> Y: Aktivator A / Repressor R: ") == A:
-	    return B_y + b_y * f(X_star_effect, Kxy, H) - ay * Y
-	else:
-		return 
+# dy / dt = f(t, y), y(t0) = y0, beware of argument order
+def ODE_Y(t, initial_values, By, betay, Kxy, H, alphay):
+    x, y, z = initial_values  # entpacken von x,y,z
+    x = Sx(t)
+    dydt = By + betay * f_activator(x, Kxy, H) - alphay * y
+    return [dydt]
 
-def dZdt():
-	if input("AND Gate oder OR Gate: ") == AND:    
-		return B_z
-	else:
-		return:		
+def ODE_Z(t, initial_values, Bz, betaz, Kxz, Kyz, H, alphaz):
+    x, y, z = initial_values
+    x = Sx(t)
+    y = np.interp(t, solution_y.t, solution_y.y[0])
+    dzdt = Bz + betaz * f_activator(x, Kxz, H) * f_activator(y, Kyz, H) - alphaz * z
+    return [dzdt]
+
+def simp_reg(t, initial_values, Bz, betaz, Kxz, Kyz, H, alphaz):
+    x, y, z = initial_values
+    x = Sx(t)
+    y = 1
+    dzdt = Bz + betaz * f_activator(x, Kxz, H) * f_activator(y, Kyz, H) - alphaz * z
+    return [dzdt]
 
 
+# Anfangswerte
+initial_values = [1, By, Bz]
 
-def dZdt(t, Z, X_star, Kxz, Y_star, Kyz, az, Bz, bz, H, Sx):
-    X_star_effect = Sx * X_star  # Ein- und Ausschalten von Sx
-    return Bz + bz * fc(X_star_effect, Kxz, Kyz, Y_star, H) - az * Z
+# Zeitbereich für die Lösung
+t_span = (0, 15)
+t_eval = np.linspace(0, 15, 100)
 
-def system(t, variables, Kxy, Kxz, Kyz, ay, By, by, az, Bz, bz, H, Sx):
-    X_star, Y, Z = variables
-    dXdt = 0  # Angenommen, X wird konstitutiv ausgedrückt
-    dYdt_val = dYdt(t, Y, X_star, Kxy, ay, By, by, H, Sx)
-    dZdt_val = dZdt(t, Z, X_star, Kxz, Y, Kyz, az, Bz, bz, H, Sx)
-    return [dXdt, dYdt_val, dZdt_val]    
+# ODEs lösen
+solution_y = solve_ivp(ODE_Y, t_span, initial_values, t_eval=t_eval, args=(By, betay, Kxy, H, alphay))
+print(solution_y)
+solution_z = solve_ivp(ODE_Z, t_span, initial_values, t_eval=t_eval, args=(Bz, betaz, Kxz, Kyz, H, alphaz))
+
+
+solution_simp_reg = solve_ivp(simp_reg, t_span, initial_values, t_eval=t_eval, args=(Bz, betaz, Kxz, Kyz, H, alphaz))
+
+
+# Plotten der Ergebnisse
+fig, axs = plt.subplots(2, 1, sharex=True, figsize=(8, 6))
+
+# Plotten von Sx
+sx_values = [Sx(t) for t in t_eval]
+axs[0].plot(t_eval, sx_values, label='Sx', color='red')
+axs[0].set_ylabel('Sx')
+axs[0].legend()
+
+# Plotten von Y und Z
+axs[1].plot(solution_y.t, solution_y.y[0], label='Y')
+axs[1].plot(solution_z.t, solution_z.y[0], label='Z')
+axs[1].plot(solution_simp_reg.t, solution_simp_reg.y[0], label='simp_reg')
+axs[1].set_xlabel('Time')
+axs[1].set_ylabel('Concentrations')
+axs[1].legend()
+
+plt.tight_layout()
+plt.show()
