@@ -14,6 +14,7 @@ Kxy = 0.1  # equilibrium constants
 Kxz = 0.1
 Kyz = 0.5
 
+# Hill Functions
 def f_activator(u, K, H):
     return (u/K)**H / (1 + (u/K)**H)
 def f_repressor(u, K, H):
@@ -33,7 +34,7 @@ def ODE_Y(t, initial_values, By, betay, Kxy, H, alphay):
 def ODE_Z(t, initial_values, Bz, betaz, Kxz, Kyz, H, alphaz):
     x, y, z = initial_values
     x = Sx(t)
-    y = np.interp(t, solution_y.t, solution_y.y[-1]) # make y continuous
+    y = np.interp(t, solution_y.t, solution_y.y[-1]) # make y continuous    
     dzdt = Bz + betaz * f_activator(x, Kxz, H) * f_activator(y, Kyz, H) - alphaz * z
     return [dzdt]
 
@@ -67,13 +68,12 @@ fig, ax = plt.subplots(2, 1, figsize=(10, 10), gridspec_kw={'height_ratios': [0.
 
 Sx = [Sx(t) for t in t_eval]
 ax[0].plot(t_eval, Sx, label='$S_x$', color='purple')
-ax[0].set_ylabel('$S_x$', rotation=360)
+ax[0].set_ylabel('$S_x$', rotation=360, fontsize="15")
 ax[0].set_xticks([])
 ax[0].set_yticks(np.arange(0, 1.1, 1)) #start,stop,step
-ax[0].legend()
 
 ax[1].axvline(x=1, color='k', linestyle='--', linewidth=1)
-ax[1].axvline(x=7, color='k', linestyle='--', linewidth=1)
+#ax[1].axvline(x=7, color='k', linestyle='--', linewidth=1)
 ax[1].axhline(y=0.5, color='k', linestyle='--', linewidth=1)
 ax[1].axhline(y=0, color='k', linestyle='--', linewidth=1)
 ax[1].axhline(y=1, color='k', linestyle='--', linewidth=1)
@@ -81,11 +81,11 @@ ax[1].axhline(y=1, color='k', linestyle='--', linewidth=1)
 ax[1].plot(solution_z_simple_reg.t, solution_z_simple_reg.y[-1], label='$Z_{simple}$')
 ax[1].plot(solution_z.t, solution_z.y[-1], label='$Z_{FFL}$')
 ax[1].set_ylim(-0.3, 1.3)
-ax[1].set_xlabel('time [t]')
-ax[1].set_ylabel('Z', rotation=180)
+ax[1].set_xlabel('time [t]', fontsize="15")
+ax[1].set_ylabel('Z', rotation=180, fontsize="15")
 ax[1].set_xticks([])
 ax[1].set_yticks(np.arange(0, 1.1, 1))
-ax[1].legend()
+ax[1].legend(bbox_to_anchor=(0.35, 0.7), fontsize='16', frameon=False)
 
 plt.tight_layout()
 plt.show()
