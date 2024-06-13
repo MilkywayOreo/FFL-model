@@ -59,35 +59,33 @@ t_eval = np.linspace(0, 10, 1000)
 initial_values = [1, By, Bz]
 
 solution_y = solve_ivp(ODE_Y, t_span, initial_values, t_eval=t_eval, method = 'Radau', args=(By, betay, Kxy, H, alphay)) # RK45, RK23, DOP853, Radau
-print(np.max(solution_y.y[-1]))
-y_data = solution_y.y[-1]
 solution_z = solve_ivp(ODE_Z, t_span, initial_values, t_eval=solution_y.t, args=(Bz, betaz, Kxz, Kyz, H, alphaz))
 solution_simp_reg = solve_ivp(simp_reg, t_span, initial_values, t_eval=solution_y.t, args=(Bz, betaz, Kxz, Kyz, H, alphaz))
 
 
 # Plotten
-fig, axs = plt.subplots(2, 1, figsize=(10, 10), gridspec_kw={'height_ratios': [0.3, 0.7]})
+fig, ax = plt.subplots(2, 1, figsize=(10, 10), gridspec_kw={'height_ratios': [0.3, 0.7]})
 
 Sx = [Sx(t) for t in t_eval]
-axs[0].plot(t_eval, Sx, label='Sx', color='purple')
-axs[0].set_ylabel('Sx')
-axs[0].set_xticks([])
-axs[0].set_yticks(np.arange(0, 1.1, 1)) #start,stop,step
-axs[0].legend()
+ax[0].plot(t_eval, Sx, label='Sx', color='purple')
+ax[0].set_ylabel('Sx')
+ax[0].set_xticks([])
+ax[0].set_yticks(np.arange(0, 1.1, 1)) #start,stop,step
+ax[0].legend()
 
-axs[1].axvline(x=1, color='k', linestyle='--', linewidth=1)
-axs[1].axvline(x=6, color='k', linestyle='--', linewidth=1)
-axs[1].axhline(y=0, color='k', linestyle='--', linewidth=1)
-axs[1].axhline(y=1, color='k', linestyle='--', linewidth=1)
-# axs[1].plot(solution_y.t, solution_y.y[-1], label='Y')
-axs[1].plot(solution_simp_reg.t, solution_simp_reg.y[-1], label='simp_reg')
-axs[1].plot(solution_z.t, solution_z.y[-1], label='Z')
-axs[1].set_ylim(-0.3, 1.3)
-axs[1].set_xlabel('Zeit [t]')
-axs[1].set_ylabel('Konzentrationen')
-axs[1].set_xticks([])
-axs[1].set_yticks(np.arange(0, 1.1, 1))
-axs[1].legend()
+ax[1].axvline(x=1, color='k', linestyle='--', linewidth=1)
+ax[1].axvline(x=6, color='k', linestyle='--', linewidth=1)
+ax[1].axhline(y=0, color='k', linestyle='--', linewidth=1)
+ax[1].axhline(y=1, color='k', linestyle='--', linewidth=1)
+# ax[1].plot(solution_y.t, solution_y.y[-1], label='Y')
+ax[1].plot(solution_simp_reg.t, solution_simp_reg.y[-1], label='simp_reg')
+ax[1].plot(solution_z.t, solution_z.y[-1], label='Z')
+ax[1].set_ylim(-0.3, 1.3)
+ax[1].set_xlabel('Zeit [t]')
+ax[1].set_ylabel('Konzentrationen')
+ax[1].set_xticks([])
+ax[1].set_yticks(np.arange(0, 1.1, 1))
+ax[1].legend()
 
 plt.tight_layout()
 plt.show()
