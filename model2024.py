@@ -18,11 +18,11 @@ def f_activator(u, K, H):
     return (u/K)**H / (1 + (u/K)**H)
 def f_repressor(u, K, H):
     return 1 / (1 + (u/K)**H) 
-# competive 
 def fc_activator(u, Ku, Kv, v, H):
     return (u / Ku)**H / (1 + (u/Ku)**H + (v/Kv)**H)
 def fc_repressor(u, Ku, Kv, v, H):
     return 1 / (1 + (u/Ku)**H + (v/Kv)**H)    
+
 
 def ODE_Y(t, initial_values, By, betay, Kxy, H, alphay):
     x, y, z = initial_values  # entpacken von x,y,z
@@ -68,7 +68,7 @@ fig, ax = plt.subplots(2, 1, figsize=(10, 10), gridspec_kw={'height_ratios': [0.
 
 Sx = [Sx(t) for t in t_eval]
 ax[0].plot(t_eval, Sx, label='Sx', color='purple')
-ax[0].set_ylabel('Sx')
+ax[0].set_ylabel('Sx', rotation=360)
 ax[0].set_xticks([])
 ax[0].set_yticks(np.arange(0, 1.1, 1)) #start,stop,step
 ax[0].legend()
@@ -82,7 +82,7 @@ ax[1].plot(solution_simp_reg.t, solution_simp_reg.y[-1], label='simp_reg')
 ax[1].plot(solution_z.t, solution_z.y[-1], label='Z')
 ax[1].set_ylim(-0.3, 1.3)
 ax[1].set_xlabel('Zeit [t]')
-ax[1].set_ylabel('Konzentrationen')
+ax[1].set_ylabel('Z', rotation=180)
 ax[1].set_xticks([])
 ax[1].set_yticks(np.arange(0, 1.1, 1))
 ax[1].legend()
