@@ -35,7 +35,7 @@ def ODE_Z(t, initial_values, Bz, betaz, Kxz, Kyz, H, alphaz):
     x, y, z = initial_values
     x = Sx(t)
     y = np.interp(t, solution_y.t, solution_y.y[-1]) # make y continuous    
-    dzdt = Bz + betaz * f_activator(x, Kxz, H) * f_activator(y, Kyz, H) - alphaz * z
+    dzdt = Bz + betaz * (fc_activator(x, Kxz, Kyz, y , H) + fc_activator(y, Kyz, Kxz, x, H)) - alphaz * z
     return [dzdt]
 
 def ODE_Z_simple_reg(t, initial_values, Bz, betaz, Kxz, Kyz, H, alphaz):
@@ -47,6 +47,12 @@ def ODE_Z_simple_reg(t, initial_values, Bz, betaz, Kxz, Kyz, H, alphaz):
 
 # time switch
 def Sx(t):
+    if 1 < t < 7:
+        return 1
+    else:
+        return 0
+
+def Sy(t):
     if 1 < t < 7:
         return 1
     else:
@@ -82,7 +88,7 @@ ax[1].plot(solution_z_simple_reg.t, solution_z_simple_reg.y[-1], label='$Z_{simp
 ax[1].plot(solution_z.t, solution_z.y[-1], label='$Z_{FFL}$')
 ax[1].set_ylim(-0.3, 1.3)
 ax[1].set_xlabel('time [t]', fontsize="15")
-ax[1].set_ylabel('Z', rotation=180, fontsize="15")
+ax[1].set_ylabel('Z', rotation=360, fontsize="15")
 ax[1].set_xticks([])
 ax[1].set_yticks(np.arange(0, 1.1, 1))
 ax[1].legend(bbox_to_anchor=(0.35, 0.7), fontsize='16', frameon=False)
