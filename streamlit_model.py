@@ -8,8 +8,10 @@ st.set_page_config(layout="wide")
 
 #st.title("Feed Forward Loop")
 
-st.latex(r"\frac{dY}{dt} = B_y + \beta_y  \left(\frac{ (\overset{*}X = S_x)/K_{xy}}{1 + \overset{*}X/K_{xy}}\right)^H - \alpha_y \, Y(t) \qquad \qquad  \frac{dZ}{dt} = B_z + \beta_z \left(\frac{\overset{*}X/K_{xz}}{1 + \overset{*}X/K_{xz}}\right)^H \left(\frac{(\overset{*}Y  = Y(t)\cdot S_y)/K_{yz}}{1 + \overset{*}Y/K_{yz}}\right)^H - \alpha_z \, Z(t)")
-                  
+
+
+
+st.latex(r"\frac{dY}{dt} = B_y + \beta_y  \left(\frac{ (\overset{*}X = S_x)/K_{xy}}{1 + \overset{*}X/K_{xy}}\right)^H - \alpha_y \, Y(t) \qquad \qquad  \frac{dZ}{dt} = B_z + \beta_z \left(\frac{\overset{*}X/K_{xz}}{1 + \overset{*}X/K_{xz}}\right)^H \left(\frac{(\overset{*}Y  = S_y \cdot Y(t))/K_{yz}}{1 + \overset{*}Y/K_{yz}}\right)^H - \alpha_z \, Z(t)")
 
 col1, col2 = st.columns([2, 4])
 
@@ -17,24 +19,37 @@ with col1:
     subcol1, subcol2 = st.columns(2)
     
     with subcol1:
-        Kxy = st.slider("$K_{xy}$ - Equilibrium constant", 0.01, 1.0, 0.1)
-        Kxz = st.slider("$K_{xz}$", 0.01, 1.0, 0.1)
-        Kyz = st.slider("$K_{yz}$", 0.01, 1.0, 0.5)
-        By = st.slider("$B_y$ - Basal expression ", 0.0, 1.0, 0.0)
-        Bz = st.slider("$B_z$", 0.0, 1.0, 0.0)
-        Sx = st.slider("$S_x$", min_value=0.0, max_value=10.0, value=1.0, step=0.1)
-        t_regler = st.slider("t - time", 0.0, 20.0, 10.0)
+        Kxz = st.slider("$\Large K_{xz}$", 0.0, 5.0, 0.1)
+        Kxy = st.slider("$\Large K_{xy}$ - Equilibrium constant", 0.0, 5.0, 0.1)
+        Kyz = st.slider("$\Large K_{yz}$", 0.0, 5.0, 0.5)
+        alphay = st.slider("$\Large \\alpha_y$", 0.1, 5.0, 1.0)
+        alphaz = st.slider("$\Large \\alpha_z$", 0.1, 5.0, 1.0)
+        betay = st.slider("$\Large \\beta_y$", 0.1, 5.0, 1.0)
+        betaz = st.slider("$\Large \\beta_z$", 0.1, 5.0, 1.0)
+        H = st.slider("$\Large H$ - Hill coefficient", 0.1, 4.0, 2.0)
+        By = st.slider("$\Large B_y$ - Basal expression ", 0.0, 1.0, 0.0)
+        Bz = st.slider("$\Large B_z$", 0.0, 1.0, 0.0)
+        Sx = st.slider("$\Large S_x$", min_value=0.0, max_value=10.0, value=1.0, step=0.1)
+        Sy = st.slider("$\Large S_y$", 0.0, 10.0, 1.0)
+        t_regler = st.slider("$\Large t$ - time", 0.0, 30.0, 10.0)
+        tx = st.slider("$\Large t_{S_x}$", 0.0, 30.00, 7.00)
+        ty = st.slider("$\Large t_{S_y}$", 0.0, 20.00, 20.00)
+
+        
 
         
     with subcol2:
-        betay = st.slider("$\\beta_y$", 0.1, 5.0, 1.0)
-        betaz = st.slider("$\\beta_z$", 0.1, 5.0, 1.0)
-        alphay = st.slider("$\\alpha_y$", 0.1, 5.0, 1.0)
-        alphaz = st.slider("$\\alpha_z$", 0.1, 5.0, 1.0)
-        H = st.slider("H - Hill coefficient ", 0.1, 4.0, 2.0)
-        Sy = st.slider("$S_y$", 0.0, 10.0, 1.0)
+        AND_button = st.checkbox('AND GATE')
+        OR_button = st.checkbox('OR GATE')
+        C1_button = st.checkbox('C type 1')
+        C2_button = st.checkbox('C type 2')
+        C3_button = st.checkbox('C type 3')
+        C4_button = st.checkbox('C type 4')
+        I1_button = st.checkbox('I type 1')
+        I2_button = st.checkbox('I type 2')
+        I3_button = st.checkbox('I type 3')
+        I4_button = st.checkbox('I type 4')
 
-    
 
 with col2:
     # Hill Functions
@@ -47,36 +62,93 @@ with col2:
     def fc_repressor(u, Ku, Kv, v, H):
         return 1 / (1 + (u/Ku)**H + (v/Kv)**H)    
 
+    def G(x_star, Kxz, y_star, Kyz, H):
+        if AND_button and C1_button:
+            return f_activator(x_star, Kxz, H) * f_activator(y_star, Kyz, H)
+        elif AND_button and C2_button:
+            return f_repressor(x_star, Kxz, H) * f_activator(y_star, Kyz, H)
+        elif AND_button and C3_button:
+            return f_repressor(x_star, Kxz, H) * f_repressor(y_star, Kyz, H)                     
+        elif AND_button and C4_button:
+            return f_activator(x_star, Kxz, H) * f_repressor(y_star, Kyz, H)
+
+        elif AND_button and I1_button:
+            return f_activator(x_star, Kxz, H) * f_repressor(y_star, Kyz, H) 
+        elif AND_button and I2_button:
+            return f_repressor(x_star, Kxz, H) * f_repressor(y_star, Kyz, H)
+        elif AND_button and I3_button:
+            return f_repressor(x_star, Kxz, H) * f_activator(y_star, Kyz, H)
+        elif AND_button and I4_button:
+            return f_activator(x_star, Kxz, H) * f_activator(y_star, Kyz, H) 
+
+        elif OR_button and C1_button:
+            return fc_activator(x_star, Kxz, Kyz, y_star, H) + fc_activator(y_star, Kyz, Kxz, x_star, H)
+        elif OR_button and C2_button:
+            return fc_repressor(x_star, Kxz, Kyz, y_star, H) + fc_activator(y_star, Kyz, Kxz, x_star, H)
+        elif OR_button and C3_button:
+            return fc_repressor(x_star, Kxz, Kyz, y_star, H) + fc_repressor(y_star, Kyz, Kxz, x_star, H)                     
+        elif OR_button and C4_button:
+            return fc_activator(x_star, Kxz, Kyz, y_star, H) + fc_repressor(y_star, Kyz, Kxz, x_star, H)  
+
+        else:
+            return 0
+
+    def f(x_star, Kxy, H):
+        if C1_button:
+            return f_activator(x_star, Kxy, H)
+        elif C2_button:
+            return f_repressor(x_star, Kxy, H)
+        elif C3_button:
+            return f_activator(x_star, Kxy, H)                        
+        elif C4_button:
+            return f_repressor(x_star, Kxy, H)
+
+        elif I1_button:
+            return f_activator(x_star, Kxy, H)
+        elif I2_button:
+            return f_repressor(x_star, Kxy, H)                      
+        elif I3_button:
+            return f_activator(x_star, Kxy, H)
+        elif I4_button:
+            return f_repressor(x_star, Kxy, H)
+
+        else:
+            return 0
+
+
+
     def ODE_Y(t, initial_values, By, betay, Kxy, H, alphay):
         x, y, z = initial_values  # unpack x,y,z
         x_star = Sx(t)
-        dydt = By + betay * f_activator(x_star, Kxy, H) - alphay * y
+        dydt = By + betay * f(x_star, Kxy, H) - alphay * y
         return [dydt]
 
     def ODE_Z(t, initial_values, Bz, betaz, Kxz, Kyz, H, alphaz):
         x, y, z = initial_values
         x_star = Sx(t)
         y_star = Sy(t) * np.interp(t, solution_y.t, solution_y.y[-1]) # make y continuous    
-        dzdt = Bz + betaz * f_activator(x_star, Kxz, H) * f_activator(y_star, Kyz, H) - alphaz * z
+        dzdt = Bz + betaz * G(x_star, Kxz, y_star, Kyz, H) - alphaz * z
         return [dzdt]
 
     def ODE_Z_simple_reg(t, initial_values, Bz, betaz, Kxz, Kyz, H, alphaz):
         x, y, z = initial_values
         x_star = Sx(t)
         y_star = Sy(t)
-        dzdt = Bz + betaz * f_activator(x_star, Kxz, H) * f_activator(y_star, Kyz, H) - alphaz * z
+        dzdt = Bz + betaz * G(x_star, Kxz, y_star, Kyz, H) - alphaz * z
         return [dzdt]
-
+ 
+    tx_end = tx
     Sx_regler = float(Sx)
     def Sx(t):
-        if 1 < t < 7:
+        if 1 < t < tx_end:
             return Sx_regler
         else:
             return 0
 
+    ty_end = ty
     Sy_regler = float(Sy)
     def Sy(t):
-        if 1 < t < 7:
+        if 1 < t < ty_end:
             return Sy_regler
         else:
             return 0            
@@ -104,10 +176,10 @@ with col2:
     ax[0].set_yticks(np.arange(0, Sx_regler+0.1, 1))
     ax[0].set_yticks(np.arange(0, Sy_regler+0.1, 1))
     ax[0].legend(loc="center left", fontsize='16', frameon=False)
-    ax[1].axvline(x=7 + np.log(2)/alphaz, color='k', linestyle='--', linewidth=1) 
+    ax[1].axvline(x=tx_end + np.log(2)/alphaz, color='k', linestyle='--', linewidth=1) 
     ax[1].axvline(x=1, color='k', linestyle='--', linewidth=1)
-    ax[1].axvline(x=7, color='k', linestyle='--', linewidth=1)
-    ax[1].axvline(x=7 + np.log(2)/alphaz, color='k', linestyle='--', linewidth=1) 
+    ax[1].axvline(x=tx_end, color='k', linestyle='--', linewidth=1)
+    ax[1].axvline(x=tx_end + np.log(2)/alphaz, color='k', linestyle='--', linewidth=1) 
     ax[1].axhline(y=np.max(solution_z.y[-1])/2.0, color='k', linestyle='--', linewidth=1)
     ax[1].axhline(y=0, color='k', linestyle='--', linewidth=1)
     ax[1].axhline(y=1, color='k', linestyle='--', linewidth=1)
