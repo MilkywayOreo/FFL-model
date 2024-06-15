@@ -8,10 +8,19 @@ st.set_page_config(layout="wide")
 
 #st.title("Feed Forward Loop")
 
+st.latex(r"\frac{dY}{dt} = B_y + \beta_y  \left(\frac{ \textcolor{lightgreen}{(\overset{*}X = S_x)}/K_{xy}}{1 + \overset{*}X/K_{xy}}\right)^H - \alpha_y \, Y(t) \qquad \qquad  \frac{dZ}{dt} = B_z + \beta_z \left(\frac{\overset{*}X/K_{xz}}{1 + \overset{*}X/K_{xz}}\right)^H \left(\frac{\textcolor{lightgreen}{(\overset{*}Y  = S_y \cdot Y(t))}/K_{yz}}{1 + \overset{*}Y/K_{yz}}\right)^H - \alpha_z \, Z(t)")
 
-
-
-st.latex(r"\frac{dY}{dt} = B_y + \beta_y  \left(\frac{ (\overset{*}X = S_x)/K_{xy}}{1 + \overset{*}X/K_{xy}}\right)^H - \alpha_y \, Y(t) \qquad \qquad  \frac{dZ}{dt} = B_z + \beta_z \left(\frac{\overset{*}X/K_{xz}}{1 + \overset{*}X/K_{xz}}\right)^H \left(\frac{(\overset{*}Y  = S_y \cdot Y(t))/K_{yz}}{1 + \overset{*}Y/K_{yz}}\right)^H - \alpha_z \, Z(t)")
+cols = st.columns(10)
+AND_button = cols[0].checkbox('AND GATE')
+OR_button = cols[1].checkbox('OR GATE')
+C1_button = cols[2].checkbox('C type 1')
+C2_button = cols[3].checkbox('C type 2')
+C3_button = cols[4].checkbox('C type 3')
+C4_button = cols[5].checkbox('C type 4')
+I1_button = cols[6].checkbox('I type 1')
+I2_button = cols[7].checkbox('I type 2')
+I3_button = cols[8].checkbox('I type 3')
+I4_button = cols[9].checkbox('I type 4')
 
 col1, col2 = st.columns([2, 4])
 
@@ -19,13 +28,16 @@ with col1:
     subcol1, subcol2 = st.columns(2)
     
     with subcol1:
-        Kxz = st.slider("$\Large K_{xz}$", 0.0, 5.0, 0.1)
-        Kxy = st.slider("$\Large K_{xy}$ - Equilibrium constant", 0.0, 5.0, 0.1)
-        Kyz = st.slider("$\Large K_{yz}$", 0.0, 5.0, 0.5)
+        Kxy = st.slider("$\Large K_{xy}$ - Equilibrium constant", 0.01, 5.0, 0.1)
+        Kxz = st.slider("$\Large K_{xz}$", 0.01, 5.0, 0.1)
+        Kyz = st.slider("$\Large K_{yz}$", 0.01, 5.0, 0.5)
         alphay = st.slider("$\Large \\alpha_y$", 0.1, 5.0, 1.0)
         alphaz = st.slider("$\Large \\alpha_z$", 0.1, 5.0, 1.0)
         betay = st.slider("$\Large \\beta_y$", 0.1, 5.0, 1.0)
         betaz = st.slider("$\Large \\beta_z$", 0.1, 5.0, 1.0)
+
+                
+    with subcol2:
         H = st.slider("$\Large H$ - Hill coefficient", 0.1, 4.0, 2.0)
         By = st.slider("$\Large B_y$ - Basal expression ", 0.0, 1.0, 0.0)
         Bz = st.slider("$\Large B_z$", 0.0, 1.0, 0.0)
@@ -34,21 +46,6 @@ with col1:
         t_regler = st.slider("$\Large t$ - time", 0.0, 30.0, 10.0)
         tx = st.slider("$\Large t_{S_x}$", 0.0, 30.00, 7.00)
         ty = st.slider("$\Large t_{S_y}$", 0.0, 20.00, 20.00)
-
-        
-
-        
-    with subcol2:
-        AND_button = st.checkbox('AND GATE')
-        OR_button = st.checkbox('OR GATE')
-        C1_button = st.checkbox('C type 1')
-        C2_button = st.checkbox('C type 2')
-        C3_button = st.checkbox('C type 3')
-        C4_button = st.checkbox('C type 4')
-        I1_button = st.checkbox('I type 1')
-        I2_button = st.checkbox('I type 2')
-        I3_button = st.checkbox('I type 3')
-        I4_button = st.checkbox('I type 4')
 
 
 with col2:
@@ -162,6 +159,7 @@ with col2:
     solution_y = solve_ivp(ODE_Y, t_span, initial_values, t_eval=t_eval, method='Radau', args=(By, betay, Kxy, H, alphay))
     solution_z = solve_ivp(ODE_Z, t_span, initial_values, t_eval=solution_y.t, method='Radau', args=(Bz, betaz, Kxz, Kyz, H, alphaz))
     solution_z_simple_reg = solve_ivp(ODE_Z_simple_reg, t_span, initial_values, t_eval=t_eval, method='Radau', args=(Bz, betaz, Kxz, Kyz, H, alphaz))
+    z_max = np.max(solution_z_simple_reg.y[-1])
 
 
     # Plot
@@ -175,24 +173,29 @@ with col2:
     ax[0].set_xticks([])
     ax[0].set_yticks(np.arange(0, Sx_regler+0.1, 1))
     ax[0].set_yticks(np.arange(0, Sy_regler+0.1, 1))
+
+
     ax[0].legend(loc="center left", fontsize='16', frameon=False)
     ax[1].axvline(x=tx_end + np.log(2)/alphaz, color='k', linestyle='--', linewidth=1) 
     ax[1].axvline(x=1, color='k', linestyle='--', linewidth=1)
     ax[1].axvline(x=tx_end, color='k', linestyle='--', linewidth=1)
-    ax[1].axvline(x=tx_end + np.log(2)/alphaz, color='k', linestyle='--', linewidth=1) 
-    ax[1].axhline(y=np.max(solution_z.y[-1])/2.0, color='k', linestyle='--', linewidth=1)
-    ax[1].axhline(y=0, color='k', linestyle='--', linewidth=1)
-    ax[1].axhline(y=1, color='k', linestyle='--', linewidth=1)
+    if z_max != 0:
+        ax[1].axvline(x=tx_end + np.log(2)/alphaz, color='k', linestyle='--', linewidth=1) 
+        ax[1].axhline(y=np.max(solution_z.y[-1])/(2.0*z_max), color='k', linestyle='--', linewidth=1)
+        ax[1].text(x=0, y=np.max(solution_z.y[-1]) / (2.0 * z_max), s='Half Max (FFL)', fontsize=12, va='center', ha='left', backgroundcolor='w')
+        ax[1].axhline(y=0, color='k', linestyle='--', linewidth=1)
+        ax[1].axhline(y=np.max(solution_z_simple_reg.y[-1]/z_max), color='k', linestyle='--', linewidth=1)
+
     if st.checkbox('Y(t) anzeigen'):
         ax[1].plot(solution_y.t, solution_y.y[-1], label='Y(t)', color= 'green')
-    ax[1].plot(solution_z_simple_reg.t, solution_z_simple_reg.y[-1], label='$Z(t)_{simple}$')
-    ax[1].plot(solution_z.t, solution_z.y[-1], label='$Z(t)_{FFL}$')
-    ax[1].set_ylim(-0.3, 1.3)
+    ax[1].plot(solution_z_simple_reg.t, solution_z_simple_reg.y[-1]/z_max, label='$Z(t)_{simple}$')
+    ax[1].plot(solution_z.t, solution_z.y[-1]/z_max, label='$Z(t)_{FFL}$')
+    ax[1].set_ylim(-0.3, 1.8)
     ax[1].set_xlabel('time [t]', fontsize="15")
     #ax[1].set_ylabel('Z', rotation=360, fontsize="15")
-    ax[1].set_xticks([7 + np.log(2)/alphaz])
+    ax[1].set_xticks([tx_end + np.log(2)/alphaz])
     ax[1].set_xticklabels([r"$\tau = \frac{\ln(2)}{\alpha_z}$"], fontsize=15)
     ax[1].set_yticks(np.arange(0, 1.1, 1))
-    ax[1].legend(loc='center left', bbox_to_anchor=(-0.01, 0.65), fontsize='15', frameon=False)
+    ax[1].legend(loc=2, bbox_to_anchor=(-0.01, 0.85), fontsize='15', frameon=False)
 
     st.pyplot(fig)

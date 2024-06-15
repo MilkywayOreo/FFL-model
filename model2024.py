@@ -27,22 +27,22 @@ def fc_repressor(u, Ku, Kv, v, H):
 
 def ODE_Y(t, initial_values, By, betay, Kxy, H, alphay):
     x, y, z = initial_values  # unpack x,y,z
-    x = Sx(t)
-    dydt = By + betay * f_activator(x, Kxy, H) - alphay * y
+    x_star = Sx(t)
+    dydt = By + betay * f_activator(x_star, Kxy, H) - alphay * y
     return [dydt]
 
 def ODE_Z(t, initial_values, Bz, betaz, Kxz, Kyz, H, alphaz):
     x, y, z = initial_values
-    x = Sx(t)
-    y = np.interp(t, solution_y.t, solution_y.y[-1]) # make y continuous    
-    dzdt = Bz + betaz * (fc_activator(x, Kxz, Kyz, y , H) + fc_activator(y, Kyz, Kxz, x, H)) - alphaz * z
+    x_star = Sx(t)
+    y_star = np.interp(t, solution_y.t, solution_y.y[-1]) # make y continuous    
+    dzdt = Bz + betaz * f_activator(x_star, Kxz, H) * f_repressor(y_star, Kyz, H) - alphaz * z
     return [dzdt]
 
 def ODE_Z_simple_reg(t, initial_values, Bz, betaz, Kxz, Kyz, H, alphaz):
     x, y, z = initial_values
-    x = Sx(t)
-    y = 1
-    dzdt = Bz + betaz * f_activator(x, Kxz, H) * f_activator(y, Kyz, H) - alphaz * z
+    x_star = Sx(t)
+    y_star = 1
+    dzdt = Bz + betaz * f_activator(x_star, Kxz, H) * f_repressor(y_star, Kyz, H) - alphaz * z
     return [dzdt]
 
 # time switch
@@ -67,6 +67,7 @@ initial_values = [1, By, Bz]
 solution_y = solve_ivp(ODE_Y, t_span, initial_values, t_eval=t_eval, method = 'Radau', args=(By, betay, Kxy, H, alphay)) # RK45, RK23, DOP853, Radau...
 solution_z = solve_ivp(ODE_Z, t_span, initial_values, t_eval=solution_y.t, method = 'Radau', args=(Bz, betaz, Kxz, Kyz, H, alphaz))
 solution_z_simple_reg = solve_ivp(ODE_Z_simple_reg, t_span, initial_values, t_eval=t_eval, method = 'Radau', args=(Bz, betaz, Kxz, Kyz, H, alphaz))
+y_tick = np.max(solution_z_simple_reg.y[-1])
 
 
 # Plot
@@ -89,8 +90,11 @@ ax[1].plot(solution_z.t, solution_z.y[-1], label='$Z_{FFL}$')
 ax[1].set_ylim(-0.3, 1.3)
 ax[1].set_xlabel('time [t]', fontsize="15")
 ax[1].set_ylabel('Z', rotation=360, fontsize="15")
-ax[1].set_xticks([])
-ax[1].set_yticks(np.arange(0, 1.1, 1))
+tau_start = 0
+if np.max(solution_z.y[-1]):
+    tau_start = solution_z.t[-1]
+ax[1].set_xticks([tau_start + np.log(2)/alphaz])
+ax[1].set_yticks(np.arange(0, y_tick+0.1, y_tick))
 ax[1].legend(bbox_to_anchor=(0.35, 0.7), fontsize='16', frameon=False)
 
 plt.tight_layout()
