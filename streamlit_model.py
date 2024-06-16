@@ -5,99 +5,151 @@ import streamlit as st
 
 st.set_page_config(layout="wide")
 
-
+Y_check = st.checkbox('Y(t) anzeigen')
 #st.title("Feed Forward Loop")
 
+#dYdt
+dydt_eq_C1_OR = r"\frac{dY}{dt} = B_y + \beta_y \left( \frac{\textcolor{orange}{\overset{*}{X}} / K_{xy}}{1 + \textcolor{orange}{\overset{*}{X}} / K_{xy}} \right)^H - \alpha_y \, Y(t)"
+dydt_eq_C2_OR = r"\frac{dY}{dt} = B_y + \beta_y \left( \frac{1}{1 + \textcolor{orange}{\overset{*}{X}} / K_{xy}} \right)^H - \alpha_y \, Y(t)"
+dydt_eq_C3_OR = r"\frac{dY}{dt} = B_y + \beta_y \left( \frac{\textcolor{orange}{\overset{*}{X}} / K_{xy}}{1 + \textcolor{orange}{\overset{*}{X}} / K_{xy}} \right)^H - \alpha_y \, Y(t)"    
+dydt_eq_C4_OR = r"\frac{dY}{dt} = B_y + \beta_y \left( \frac{1}{1 + \textcolor{orange}{\overset{*}{X}} / K_{xy}} \right)^H - \alpha_y \, Y(t)"
+
+dydt_eq_C1 = r"\frac{dY}{dt} = B_y + \beta_y \left( \frac{\textcolor{orange}{\overset{*}{X}} / K_{xy}}{1 + \textcolor{orange}{\overset{*}{X}} / K_{xy}} \right)^H - \alpha_y \, Y(t) "      
+dydt_eq_C2 = r"\frac{dY}{dt} = B_y + \beta_y \left( \frac{1}{1 + \textcolor{orange}{\overset{*}{X}} / K_{xy}} \right)^H - \alpha_y \, Y(t)"
+dydt_eq_C3 = r"\frac{dY}{dt} = B_y + \beta_y \left( \frac{\textcolor{orange}{\overset{*}{X}} / K_{xy}}{1 + \textcolor{orange}{\overset{*}{X}} / K_{xy}} \right)^H - \alpha_y \, Y(t)"     
+dydt_eq_C4 = r"\frac{dY}{dt} = B_y + \beta_y \left( \frac{1}{1 + \textcolor{orange}{\overset{*}{X}} / K_{xy}} \right)^H - \alpha_y \, Y(t)"
+
+dydt_eq_I1 = r"\frac{dY}{dt} = B_y + \beta_y \left( \frac{\textcolor{orange}{\overset{*}{X}} / K_{xy}}{1 + \textcolor{orange}{\overset{*}{X}} / K_{xy}} \right)^H - \alpha_y \, Y(t)"        
+dydt_eq_I2 = r"\frac{dY}{dt} = B_y + \beta_y \left( \frac{1}{1 + \textcolor{orange}{\overset{*}{X}} / K_{xy}} \right)^H - \alpha_y \, Y(t)"        
+dydt_eq_I3 = r"\frac{dY}{dt} = B_y + \beta_y \left( \frac{\textcolor{orange}{\overset{*}{X}} / K_{xy}}{1 + \textcolor{orange}{\overset{*}{X}} / K_{xy}} \right)^H - \alpha_y \, Y(t)"      
+dydt_eq_I4 = r"\frac{dY}{dt} = B_y + \beta_y \left( \frac{1}{1 + \textcolor{orange}{\overset{*}{X}} / K_{xy}} \right)^H - \alpha_y \, Y(t)"        
+
+#dZdt
+dzdt_eq_C1_OR = r"\frac{dZ}{dt} = B_z + \beta_z \left[ \left( \frac{\textcolor{orange}{\overset{*}{X}} / K_{xz}}{1 + \textcolor{orange}{\overset{*}{X}} / K_{xz} + \textcolor{DarkOrchid}{\overset{*}{Y}} / K_{yz}} \right)^H + \left( \frac{\textcolor{DarkOrchid}{\overset{*}{Y}} / K_{yz}}{1 + \textcolor{DarkOrchid}{\overset{*}{Y}} / K_{yz} + \textcolor{orange}{\overset{*}{X}} / K_{xz}} \right)^H \right] - \alpha_z \, Z(t)"
+dzdt_eq_C2_OR = r"\frac{dZ}{dt} = B_z + \beta_z \left[ \left( \frac{1}{1 + \textcolor{orange}{\overset{*}{X}} / K_{xz} + \textcolor{DarkOrchid}{\overset{*}{Y}} / K_{yz}} \right)^H + \left( \frac{\textcolor{DarkOrchid}{\overset{*}{Y}} / K_{yz}}{1 + \textcolor{DarkOrchid}{\overset{*}{Y}} / K_{yz} + \textcolor{orange}{\overset{*}{X}} / K_{xz}} \right)^H \right] - \alpha_z \, Z(t)"
+dzdt_eq_C3_OR = r"\frac{dZ}{dt} = B_z + \beta_z \left[ \left( \frac{1}{1 + \textcolor{orange}{\overset{*}{X}} / K_{xz} + \textcolor{DarkOrchid}{\overset{*}{Y}} / K_{yz}} \right)^H + \left( \frac{1}{1 + \textcolor{DarkOrchid}{\overset{*}{Y}} / K_{yz} + \textcolor{orange}{\overset{*}{X}} / K_{xz}} \right)^H \right] - \alpha_z \, Z(t)"
+dzdt_eq_C4_OR = r"\frac{dZ}{dt} = B_z + \beta_z \left[ \left( \frac{\textcolor{orange}{\overset{*}{X}} / K_{xz}}{1 + \textcolor{orange}{\overset{*}{X}} / K_{xz} + \textcolor{DarkOrchid}{\overset{*}{Y}} / K_{yz}} \right)^H + \left( \frac{1}{1 + \textcolor{DarkOrchid}{\overset{*}{Y}} / K_{yz} + \textcolor{orange}{\overset{*}{X}} / K_{xz}} \right)^H \right] - \alpha_z \, Z(t)"
+
+dzdt_eq_C1 = r"\frac{dZ}{dt} = B_z + \beta_z \left( \frac{\textcolor{orange}{\overset{*}{X}} / K_{xz}}{1 + \textcolor{orange}{\overset{*}{X}} / K_{xz}} \right)^H \left( \frac{\textcolor{DarkOrchid}{\overset{*}{Y}} / K_{yz}}{1 + \textcolor{DarkOrchid}{\overset{*}{Y}} / K_{yz}} \right)^H - \alpha_z \, Z(t)"
+dzdt_eq_C2 = r"\frac{dZ}{dt} = B_z + \beta_z \left( \frac{1}{1 + \textcolor{orange}{\overset{*}{X}} / K_{xz}} \right)^H \left( \frac{\textcolor{DarkOrchid}{\overset{*}{Y}} / K_{yz}}{1 + \textcolor{DarkOrchid}{\overset{*}{Y}} / K_{yz}} \right)^H - \alpha_z \, Z(t)"
+dzdt_eq_C3 = r"\frac{dZ}{dt} = B_z + \beta_z \left( \frac{1}{1 + \textcolor{orange}{\overset{*}{X}} / K_{xz}} \right)^H \left( \frac{1}{1 + \textcolor{DarkOrchid}{\overset{*}{Y}} / K_{yz}} \right)^H - \alpha_z \, Z(t)"
+dzdt_eq_C4 = r"\frac{dZ}{dt} = B_z + \beta_z \left( \frac{\textcolor{orange}{\overset{*}{X}} / K_{xz}}{1 + \textcolor{orange}{\overset{*}{X}} / K_{xz}} \right)^H \left( \frac{1}{1 + \textcolor{DarkOrchid}{\overset{*}{Y}} / K_{yz}} \right)^H - \alpha_z \, Z(t)"
+
+dzdt_eq_I1 = r"\frac{dZ}{dt} = B_z + \beta_z \left( \frac{\textcolor{orange}{\overset{*}{X}} / K_{xz}}{1 + \textcolor{orange}{\overset{*}{X}} / K_{xz}} \right)^H \left( \frac{1}{1 + \textcolor{DarkOrchid}{\overset{*}{Y}} / K_{yz}} \right)^H - \alpha_z \, Z(t)"
+dzdt_eq_I2 = r"\frac{dZ}{dt} = B_z + \beta_z \left( \frac{1}{1 + \textcolor{orange}{\overset{*}{X}} / K_{xz}} \right)^H \left( \frac{1}{1 + \textcolor{DarkOrchid}{\overset{*}{Y}} / K_{yz}} \right)^H - \alpha_z \, Z(t)"
+dzdt_eq_I3 = r"\frac{dZ}{dt} = B_z + \beta_z \left( \frac{1}{1 + \textcolor{orange}{\overset{*}{X}} / K_{xz}} \right)^H \left( \frac{\textcolor{DarkOrchid}{\overset{*}{Y}} / K_{yz}}{1 + \textcolor{DarkOrchid}{\overset{*}{Y}} / K_{yz}} \right)^H - \alpha_z \, Z(t)"
+dzdt_eq_I4 = r"\frac{dZ}{dt} = B_z + \beta_z \left( \frac{\textcolor{orange}{\overset{*}{X}} / K_{xz}}{1 + \textcolor{orange}{\overset{*}{X}} / K_{xz}} \right)^H \left( \frac{\textcolor{DarkOrchid}{\overset{*}{Y}} / K_{yz}}{1 + \textcolor{DarkOrchid}{\overset{*}{Y}} / K_{yz}} \right)^H - \alpha_z \, Z(t)"
+
+eq_Xstar = r"\textcolor{orange}{\overset{*}{X}} = S_x"
+eq_Ystar = r"\textcolor{DarkOrchid}{\overset{*}{Y}}= S_y \cdot Y(t)"
 
 
+button = st.columns(10)
+AND_button = button[0].checkbox('AND GATE', value=True)
+OR_button = button[1].checkbox('OR GATE')
+C1_button = button[2].checkbox('C type 1', value=True)
+C2_button = button[3].checkbox('C type 2', value=True)
+C3_button = button[4].checkbox('C type 3', value=True)
+C4_button = button[5].checkbox('C type 4', value=True)
+I1_button = button[6].checkbox('I type 1', value=True)
+I2_button = button[7].checkbox('I type 2', value=True)
+I3_button = button[8].checkbox('I type 3', value=True)
+I4_button = button[9].checkbox('I type 4', value=True)
 
 
-cols = st.columns(10)
-AND_button = cols[0].checkbox('AND GATE')
-OR_button = cols[1].checkbox('OR GATE')
-C1_button = cols[2].checkbox('C type 1')
-C2_button = cols[3].checkbox('C type 2')
-C3_button = cols[4].checkbox('C type 3')
-C4_button = cols[5].checkbox('C type 4')
-I1_button = cols[6].checkbox('I type 1')
-I2_button = cols[7].checkbox('I type 2')
-I3_button = cols[8].checkbox('I type 3')
-I4_button = cols[9].checkbox('I type 4')
-
-
-
+eq, dgl = st.columns([1,7])
 if OR_button and C1_button:
-    st.latex(r"\textcolor{cyan}{\overset{*}{X}} = S_x  \quad \textcolor{DarkOrchid}{\overset{*}{Y}}= S_y \cdot Y(t)")
-    OR_C1 = st.latex(r"\frac{dY}{dt} = B_y + \beta_y \left( \frac{\textcolor{cyan}{\overset{*}{X}} / K_{xy}}{1 + \textcolor{cyan}{\overset{*}{X}} / K_{xy}} \right)^H - \alpha_y \, Y(t) \qquad \qquad \frac{dZ}{dt} = B_z + \beta_z \left( \frac{\textcolor{cyan}{\overset{*}{X}} / K_{xz}}{1 + \textcolor{cyan}{\overset{*}{X}} / K_{xz} + \textcolor{DarkOrchid}{\overset{*}{Y}} / K_{yz}} \right)^H \left( \frac{\textcolor{DarkOrchid}{\overset{*}{Y}} / K_{yz}}{1 + \textcolor{DarkOrchid}{\overset{*}{Y}} / K_{yz} + \textcolor{cyan}{\overset{*}{X}} / K_{xz}} \right)^H - \alpha_z \, Z(t)")
+    with eq:
+        st.latex(eq_Xstar + r"\\" + eq_Ystar)
+    with dgl:    
+        st.latex(dydt_eq_C1_OR + r"\qquad \qquad"+ dzdt_eq_C1_OR)
 elif OR_button and C2_button:
-    st.latex(r"\textcolor{cyan}{\overset{*}{X}} = S_x  \quad \textcolor{DarkOrchid}{\overset{*}{Y}}= S_y \cdot Y(t)")
-    OR_C2 = st.latex(r"\frac{dY}{dt} = B_y + \beta_y \left( \frac{1}{1 + \textcolor{cyan}{\overset{*}{X}} / K_{xy}} \right)^H - \alpha_y \, Y(t) \qquad \qquad \frac{dZ}{dt} = B_z + \beta_z \left( \frac{1}{1 + \textcolor{cyan}{\overset{*}{X}} / K_{xz} + \textcolor{DarkOrchid}{\overset{*}{Y}} / K_{yz}} \right)^H \left( \frac{\textcolor{DarkOrchid}{\overset{*}{Y}} / K_{yz}}{1 + \textcolor{DarkOrchid}{\overset{*}{Y}} / K_{yz} + \textcolor{cyan}{\overset{*}{X}} / K_{xz}} \right)^H - \alpha_z \, Z(t)")
+    with eq:
+        st.latex(eq_Xstar + r"\\" + eq_Ystar)
+    with dgl: 
+        st.latex(dydt_eq_C2_OR + r"\qquad \qquad"+ dzdt_eq_C2_OR)
 elif OR_button and C3_button:
-    st.latex(r"\textcolor{cyan}{\overset{*}{X}} = S_x  \quad \textcolor{DarkOrchid}{\overset{*}{Y}}= S_y \cdot Y(t)")
-    OR_C3 = st.latex(r"\frac{dY}{dt} = B_y + \beta_y \left( \frac{\textcolor{cyan}{\overset{*}{X}} / K_{xy}}{1 + \textcolor{cyan}{\overset{*}{X}} / K_{xy}} \right)^H - \alpha_y \, Y(t) \qquad \qquad \frac{dZ}{dt} = B_z + \beta_z \left( \frac{1}{1 + \textcolor{cyan}{\overset{*}{X}} / K_{xz} + \textcolor{DarkOrchid}{\overset{*}{Y}} / K_{yz}} \right)^H \left( \frac{1}{1 + \textcolor{DarkOrchid}{\overset{*}{Y}} / K_{yz} + \textcolor{cyan}{\overset{*}{X}} / K_{xz}} \right)^H - \alpha_z \, Z(t)")
+    with eq:
+        st.latex(eq_Xstar + r"\\" + eq_Ystar)
+    with dgl: 
+        st.latex(dydt_eq_C3_OR + r"\qquad \qquad"+ dzdt_eq_C2_OR)
 elif OR_button and C4_button:
-    st.latex(r"\textcolor{cyan}{\overset{*}{X}} = S_x  \quad \textcolor{DarkOrchid}{\overset{*}{Y}}= S_y \cdot Y(t)")    
-    OR_C4 = st.latex(r"\frac{dY}{dt} = B_y + \beta_y \left( \frac{1}{1 + \textcolor{cyan}{\overset{*}{X}} / K_{xy}} \right)^H - \alpha_y \, Y(t) \qquad \qquad \frac{dZ}{dt} = B_z + \beta_z \left( \frac{\textcolor{cyan}{\overset{*}{X}} / K_{xz}}{1 + \textcolor{cyan}{\overset{*}{X}} / K_{xz} + \textcolor{DarkOrchid}{\overset{*}{Y}} / K_{yz}} \right)^H \left( \frac{1}{1 + \textcolor{DarkOrchid}{\overset{*}{Y}} / K_{yz} + \textcolor{cyan}{\overset{*}{X}} / K_{xz}} \right)^H - \alpha_z \, Z(t)")
-st.latex("")
-st.latex("")
-if AND_button and C1_button:
-    st.latex(r"\textcolor{cyan}{\overset{*}{X}} = S_x  \quad \textcolor{DarkOrchid}{\overset{*}{Y}}= S_y \cdot Y(t)")    
-    AND_C1 = st.latex(r"\frac{dY}{dt} = B_y + \beta_y \left( \frac{\textcolor{cyan}{\overset{*}{X}} / K_{xy}}{1 + \textcolor{cyan}{\overset{*}{X}} / K_{xy}} \right)^H - \alpha_y \, Y(t) \qquad \qquad \frac{dZ}{dt} = B_z + \beta_z \left( \frac{\textcolor{cyan}{\overset{*}{X}} / K_{xz}}{1 + \textcolor{cyan}{\overset{*}{X}} / K_{xz}} \right)^H \left( \frac{\textcolor{DarkOrchid}{\overset{*}{Y}} / K_{yz}}{1 + \textcolor{DarkOrchid}{\overset{*}{Y}} / K_{yz}} \right)^H - \alpha_z \, Z(t)")
+    with eq:
+        st.latex(eq_Xstar + r"\\" + eq_Ystar)
+    with dgl: 
+        st.latex(dydt_eq_C4_OR + r"\qquad \qquad"+ dzdt_eq_C3_OR)
+
+elif AND_button and C1_button:
+    with eq:
+        st.latex(eq_Xstar + r"\\" + eq_Ystar)
+    with dgl: 
+        st.latex(dydt_eq_C1 + r"\qquad \qquad"+ dzdt_eq_C1)
 elif AND_button and C2_button:
-    st.latex(r"\textcolor{cyan}{\overset{*}{X}} = S_x  \quad \textcolor{DarkOrchid}{\overset{*}{Y}}= S_y \cdot Y(t)")
-    AND_C2 = st.latex(r"\frac{dY}{dt} = B_y + \beta_y \left( \frac{1}{1 + \textcolor{cyan}{\overset{*}{X}} / K_{xy}} \right)^H - \alpha_y \, Y(t) \qquad \qquad \frac{dZ}{dt} = B_z + \beta_z \left( \frac{1}{1 + \textcolor{cyan}{\overset{*}{X}} / K_{xz}} \right)^H \left( \frac{\textcolor{DarkOrchid}{\overset{*}{Y}} / K_{yz}}{1 + \textcolor{DarkOrchid}{\overset{*}{Y}} / K_{yz}} \right)^H - \alpha_z \, Z(t)")
+    with eq:
+        st.latex(eq_Xstar + r"\\" + eq_Ystar)
+    with dgl: 
+        st.latex(dydt_eq_C2 + r"\qquad \qquad"+ dzdt_eq_C2)
 elif AND_button and C3_button:
-    st.latex(r"\textcolor{cyan}{\overset{*}{X}} = S_x  \quad \textcolor{DarkOrchid}{\overset{*}{Y}}= S_y \cdot Y(t)")
-    AND_C3 = st.latex(r"\frac{dY}{dt} = B_y + \beta_y \left( \frac{\textcolor{cyan}{\overset{*}{X}} / K_{xy}}{1 + \textcolor{cyan}{\overset{*}{X}} / K_{xy}} \right)^H - \alpha_y \, Y(t) \qquad \qquad \frac{dZ}{dt} = B_z + \beta_z \left( \frac{1}{1 + \textcolor{cyan}{\overset{*}{X}} / K_{xz}} \right)^H \left( \frac{1}{1 + \textcolor{DarkOrchid}{\overset{*}{Y}} / K_{yz}} \right)^H - \alpha_z \, Z(t)")
+    with eq:
+        st.latex(eq_Xstar + r"\\" + eq_Ystar)
+    with dgl: 
+        st.latex(dydt_eq_C3 + r"\qquad \qquad"+ dzdt_eq_C3)
 elif AND_button and C4_button:
-    st.latex(r"\textcolor{cyan}{\overset{*}{X}} = S_x  \quad \textcolor{DarkOrchid}{\overset{*}{Y}}= S_y \cdot Y(t)")
-    AND_C4 = st.latex(r"\frac{dY}{dt} = B_y + \beta_y \left( \frac{1}{1 + \textcolor{cyan}{\overset{*}{X}} / K_{xy}} \right)^H - \alpha_y \, Y(t) \qquad \qquad \frac{dZ}{dt} = B_z + \beta_z \left( \frac{\textcolor{cyan}{\overset{*}{X}} / K_{xz}}{1 + \textcolor{cyan}{\overset{*}{X}} / K_{xz}} \right)^H \left( \frac{1}{1 + \textcolor{DarkOrchid}{\overset{*}{Y}} / K_{yz}} \right)^H - \alpha_z \, Z(t)")
-st.latex("")
-st.latex("")
-if AND_button and I1_button:
-    st.latex(r"\textcolor{cyan}{\overset{*}{X}} = S_x  \quad \textcolor{DarkOrchid}{\overset{*}{Y}}= S_y \cdot Y(t)")
-    AND_I1 = st.latex(r"\frac{dY}{dt} = B_y + \beta_y \left( \frac{\textcolor{orange}{\overset{*}{X}} / K_{xy}}{1 + \textcolor{orange}{\overset{*}{X}} / K_{xy}} \right)^H - \alpha_y \, Y(t) \qquad \qquad \frac{dZ}{dt} = B_z + \beta_z \left( \frac{\textcolor{orange}{\overset{*}{X}} / K_{xz}}{1 + \textcolor{orange}{\overset{*}{X}} / K_{xz}} \right)^H \left( \frac{1}{1 + \textcolor{lightgreen}{\overset{*}{Y}} / K_{yz}} \right)^H - \alpha_z \, Z(t)")
+    with eq:
+        st.latex(eq_Xstar + r"\\" + eq_Ystar)
+    with dgl: 
+        st.latex(dydt_eq_C4 + r"\qquad \qquad"+ dzdt_eq_C4)
+
+elif AND_button and I1_button:
+    with eq:
+        st.latex(eq_Xstar + r"\\" + eq_Ystar)
+    with dgl: 
+        st.latex(dydt_eq_I1 + r"\qquad \qquad"+ dzdt_eq_I1)
 elif AND_button and I2_button:
-    st.latex(r"\textcolor{cyan}{\overset{*}{X}} = S_x  \quad \textcolor{DarkOrchid}{\overset{*}{Y}}= S_y \cdot Y(t)")
-    AND_I2 = st.latex(r"\frac{dY}{dt} = B_y + \beta_y \left( \frac{1}{1 + \textcolor{orange}{\overset{*}{X}} / K_{xy}} \right)^H - \alpha_y \, Y(t) \qquad \qquad \frac{dZ}{dt} = B_z + \beta_z \left( \frac{1}{1 + \textcolor{orange}{\overset{*}{X}} / K_{xz}} \right)^H \left( \frac{1}{1 + \textcolor{lightgreen}{\overset{*}{Y}} / K_{yz}} \right)^H - \alpha_z \, Z(t)")
+    with eq:
+        st.latex(eq_Xstar + r"\\" + eq_Ystar)
+    with dgl: 
+        st.latex(dydt_eq_I2 + r"\qquad \qquad"+ dzdt_eq_I2)
 elif AND_button and I3_button:
-    st.latex(r"\textcolor{cyan}{\overset{*}{X}} = S_x  \quad \textcolor{DarkOrchid}{\overset{*}{Y}}= S_y \cdot Y(t)")
-    AND_I3 = st.latex(r"\frac{dY}{dt} = B_y + \beta_y \left( \frac{\textcolor{orange}{\overset{*}{X}} / K_{xy}}{1 + \textcolor{orange}{\overset{*}{X}} / K_{xy}} \right)^H - \alpha_y \, Y(t) \qquad \qquad \frac{dZ}{dt} = B_z + \beta_z \left( \frac{1}{1 + \textcolor{orange}{\overset{*}{X}} / K_{xz}} \right)^H \left( \frac{\textcolor{lightgreen}{\overset{*}{Y}} / K_{yz}}{1 + \textcolor{lightgreen}{\overset{*}{Y}} / K_{yz}} \right)^H - \alpha_z \, Z(t)")
+    with eq:
+        st.latex(eq_Xstar + r"\\" + eq_Ystar)
+    with dgl: 
+        st.latex(eq_Ystar + dydt_eq_I3 + r"\qquad \qquad"+ dzdt_eq_I3)
 elif AND_button and I4_button:
-    st.latex(r"\textcolor{cyan}{\overset{*}{X}} = S_x  \quad \textcolor{DarkOrchid}{\overset{*}{Y}}= S_y \cdot Y(t)")
-    AND_I4 = st.latex(r"\frac{dY}{dt} = B_y + \beta_y \left( \frac{1}{1 + \textcolor{orange}{\overset{*}{X}} / K_{xy}} \right)^H - \alpha_y \, Y(t) \qquad \qquad \frac{dZ}{dt} = B_z + \beta_z \left( \frac{\textcolor{orange}{\overset{*}{X}} / K_{xz}}{1 + \textcolor{orange}{\overset{*}{X}} / K_{xz}} \right)^H \left( \frac{\textcolor{lightgreen}{\overset{*}{Y}} / K_{yz}}{1 + \textcolor{lightgreen}{\overset{*}{Y}} / K_{yz}} \right)^H - \alpha_z \, Z(t)")
+    with eq:
+        st.latex(eq_Xstar + r"\\" + eq_Ystar)
+    with dgl: 
+        st.latex(eq_Ystar + dydt_eq_I4 + r"\qquad \qquad"+ dzdt_eq_I4)
 
 
 
-
-
-col1, col2 = st.columns([2, 4])
-
-with col1:
-    subcol1, subcol2 = st.columns(2)
+params, PLOT = st.columns([2, 3])
+with params:
+    slider1, slider2 = st.columns(2)
     
-    with subcol1:
+    with slider1:
         Kxy = st.slider("$\Large K_{xy}$ - Equilibrium constant", 0.01, 5.0, 0.1)
         Kxz = st.slider("$\Large K_{xz}$", 0.01, 5.0, 0.1)
         Kyz = st.slider("$\Large K_{yz}$", 0.01, 5.0, 0.5)
-        alphay = st.slider("$\Large \\alpha_y$", 0.1, 5.0, 1.0)
-        alphaz = st.slider("$\Large \\alpha_z$", 0.1, 5.0, 1.0)
-        betay = st.slider("$\Large \\beta_y$", 0.1, 5.0, 1.0)
-        betaz = st.slider("$\Large \\beta_z$", 0.1, 5.0, 1.0)
-
-                
-    with subcol2:
         H = st.slider("$\Large H$ - Hill coefficient", 0.1, 200.0, 2.0)
-        By = st.slider("$\Large B_y$ - Basal expression ", 0.0, 1.0, 0.0)
-        Bz = st.slider("$\Large B_z$", 0.0, 1.0, 0.0)
-        Sx = st.slider("$\Large S_x$", min_value=0.0, max_value=10.0, value=1.0, step=0.1)
-        Sy = st.slider("$\Large S_y$", 0.0, 10.0, 1.0)
-        t_regler = st.slider("$\Large t$ - time", 0.0, 30.0, 10.0)
+        Sx = st.slider("$\Large S_x$", min_value=0.01, max_value=10.0, value=1.0, step=0.1)
+        Sy = st.slider("$\Large S_y$", 0.01, 10.0, 1.0)
         tx = st.slider("$\Large t_{S_x}$", 0.0, 30.00, 7.00)
+        t_regler = st.slider("$\Large t$ - time", 0.0, 30.0, 10.0)
+          
+    with slider2:
+        alphay = st.slider("$\Large \\alpha_y$", 0.1, 10.0, 1.0)
+        alphaz = st.slider("$\Large \\alpha_z$", 0.1, 10.0, 1.0)
+        betay = st.slider("$\Large \\beta_y$", 0.1, 10.0, 1.0)
+        betaz = st.slider("$\Large \\beta_z$", 0.1, 10.0, 1.0)
+        By = st.slider("$\Large B_y$ - Basal expression ", 0.0, 10.0, 0.0)
+        Bz = st.slider("$\Large B_z$", 0.0, 10.0, 0.0)
         ty = st.slider("$\Large t_{S_y}$", 0.0, 20.00, 20.00)
 
 
-with col2:
+        
+
+with PLOT:
     # Hill Functions
     def f_activator(u, K, H):
         return (u/K)**H / (1 + (u/K)**H)
@@ -107,6 +159,27 @@ with col2:
         return (u / Ku)**H / (1 + (u/Ku)**H + (v/Kv)**H)
     def fc_repressor(u, Ku, Kv, v, H):
         return 1 / (1 + (u/Ku)**H + (v/Kv)**H)    
+
+    def f(x_star, Kxy, H):
+        if C1_button:
+            return f_activator(x_star, Kxy, H)
+        if C2_button:
+            return f_repressor(x_star, Kxy, H)
+        elif C3_button:
+            return f_activator(x_star, Kxy, H)                        
+        elif C4_button:
+            return f_repressor(x_star, Kxy, H)
+
+        elif I1_button:
+            return f_activator(x_star, Kxy, H)
+        elif I2_button:
+            return f_repressor(x_star, Kxy, H)                      
+        elif I3_button:
+            return f_activator(x_star, Kxy, H)
+        elif I4_button:
+            return f_repressor(x_star, Kxy, H)
+        else:
+            return 0    
 
     def G(x_star, Kxz, y_star, Kyz, H):
         if AND_button and C1_button:
@@ -135,32 +208,8 @@ with col2:
             return fc_repressor(x_star, Kxz, Kyz, y_star, H) + fc_repressor(y_star, Kyz, Kxz, x_star, H)                     
         elif OR_button and C4_button:
             return fc_activator(x_star, Kxz, Kyz, y_star, H) + fc_repressor(y_star, Kyz, Kxz, x_star, H)  
-
         else:
             return 0
-
-    def f(x_star, Kxy, H):
-        if C1_button:
-            return f_activator(x_star, Kxy, H)
-        if C2_button:
-            return f_repressor(x_star, Kxy, H)
-        elif C3_button:
-            return f_activator(x_star, Kxy, H)                        
-        elif C4_button:
-            return f_repressor(x_star, Kxy, H)
-
-        elif I1_button:
-            return f_activator(x_star, Kxy, H)
-        elif I2_button:
-            return f_repressor(x_star, Kxy, H)                      
-        elif I3_button:
-            return f_activator(x_star, Kxy, H)
-        elif I4_button:
-            return f_repressor(x_star, Kxy, H)
-
-        else:
-            return 0
-
 
 
     def ODE_Y(t, initial_values, By, betay, Kxy, H, alphay):
@@ -212,59 +261,42 @@ with col2:
 
 
     # Plot
-    fig, ax = plt.subplots(2, 1, figsize=(15, 10), gridspec_kw={'height_ratios': [0.3, 0.7]})
+    fig, ax = plt.subplots(2, 1, figsize=(8, 9), gridspec_kw={'height_ratios': [0.15, 0.85]})
+
 
     Sx_vals = [Sx(t) for t in t_eval]
     Sy_vals = [Sy(t) for t in t_eval]
-    ax[0].plot(t_eval, Sx_vals, label='$S_x$', color='cyan')
+    ax[0].plot(t_eval, Sx_vals, label='$S_x$', color='orange')
     ax[0].plot(t_eval, Sy_vals, label='$S_y$', color='DarkOrchid')
     #ax[0].set_ylabel('$S_x$', rotation=360, fontsize="15")
     ax[0].set_xticks([])
     ax[0].set_yticks(np.arange(0, Sx_regler+0.1, 1))
     ax[0].set_yticks(np.arange(0, Sy_regler+0.1, 1))
+    ax[0].legend(fontsize='14', frameon=False)
 
-
-    ax[0].legend(loc="center left", fontsize='16', frameon=False)
     ax[1].axvline(x=tx_end + np.log(2)/alphaz, color='k', linestyle='--', linewidth=1) 
     ax[1].axvline(x=1, color='k', linestyle='--', linewidth=1)
     ax[1].axvline(x=tx_end, color='k', linestyle='--', linewidth=1)
-    if z_max != 0:
+    if 2.0 * z_max != 0:
         ax[1].axvline(x=tx_end + np.log(2)/alphaz, color='k', linestyle='--', linewidth=1) 
         ax[1].axhline(y=np.max(solution_z.y[-1])/(2.0*z_max), color='k', linestyle='--', linewidth=1)
-        ax[1].text(x=0, y=np.max(solution_z.y[-1]) / (2.0 * z_max), s='Half Max (FFL)', fontsize=12, va='center', ha='left', backgroundcolor='w')
+        ax[1].text(x=0, y=np.max(solution_z.y[-1]) / (2.0 * z_max), s='1/2 max_FFL', fontsize=12, va='center', ha='left', backgroundcolor='w')
         ax[1].axhline(y=0, color='k', linestyle='--', linewidth=1)
         ax[1].axhline(y=np.max(solution_z_simple_reg.y[-1]/z_max), color='k', linestyle='--', linewidth=1)
 
-    if st.checkbox('Y(t) anzeigen'):
+    if Y_check:
         ax[1].plot(solution_y.t, solution_y.y[-1], label='Y(t)', color= 'green')
     ax[1].plot(solution_z_simple_reg.t, solution_z_simple_reg.y[-1]/z_max, label='$Z(t)_{simple}$')
     ax[1].plot(solution_z.t, solution_z.y[-1]/z_max, label='$Z(t)_{FFL}$')
     ax[1].set_ylim(-0.3, 1.8)
     ax[1].set_xlabel('time [t]', fontsize="15")
-    #ax[1].set_ylabel('Z', rotation=360, fontsize="15")
+    ax[1].set_ylabel('Z', rotation=360, fontsize="15")
     ax[1].set_xticks([tx_end + np.log(2)/alphaz])
     ax[1].set_xticklabels([r"$\tau = \frac{\ln(2)}{\alpha_z}$"], fontsize=15)
     ax[1].set_yticks(np.arange(0, 1.1, 1))
-    ax[1].legend(loc=2, bbox_to_anchor=(-0.01, 0.85), fontsize='15', frameon=False)
+    ax[1].legend(fontsize='13', frameon=False)
 
     st.pyplot(fig)
 
 
-OR_C1 = st.latex(r"OR\,\,Coherent \,\,1:\quad \frac{dY}{dt} = B_y + \beta_y \left( \frac{\textcolor{cyan}{\overset{*}{X}} / K_{xy}}{1 + \textcolor{cyan}{\overset{*}{X}} / K_{xy}} \right)^H - \alpha_y \, Y(t) \qquad \qquad \frac{dZ}{dt} = B_z + \beta_z \left( \frac{\textcolor{cyan}{\overset{*}{X}} / K_{xz}}{1 + \textcolor{cyan}{\overset{*}{X}} / K_{xz} + \textcolor{DarkOrchid}{\overset{*}{Y}} / K_{yz}} \right)^H \left( \frac{\textcolor{DarkOrchid}{\overset{*}{Y}} / K_{yz}}{1 + \textcolor{DarkOrchid}{\overset{*}{Y}} / K_{yz} + \textcolor{cyan}{\overset{*}{X}} / K_{xz}} \right)^H - \alpha_z \, Z(t)")
-OR_C2 = st.latex(r"OR\,\,Coherent \,\,2:\quad \frac{dY}{dt} = B_y + \beta_y \left( \frac{1}{1 + \textcolor{cyan}{\overset{*}{X}} / K_{xy}} \right)^H - \alpha_y \, Y(t) \qquad \qquad \frac{dZ}{dt} = B_z + \beta_z \left( \frac{1}{1 + \textcolor{cyan}{\overset{*}{X}} / K_{xz} + \textcolor{DarkOrchid}{\overset{*}{Y}} / K_{yz}} \right)^H \left( \frac{\textcolor{DarkOrchid}{\overset{*}{Y}} / K_{yz}}{1 + \textcolor{DarkOrchid}{\overset{*}{Y}} / K_{yz} + \textcolor{cyan}{\overset{*}{X}} / K_{xz}} \right)^H - \alpha_z \, Z(t)")
-OR_C3 = st.latex(r"OR\,\,Coherent \,\,3:\quad \frac{dY}{dt} = B_y + \beta_y \left( \frac{\textcolor{cyan}{\overset{*}{X}} / K_{xy}}{1 + \textcolor{cyan}{\overset{*}{X}} / K_{xy}} \right)^H - \alpha_y \, Y(t) \qquad \qquad \frac{dZ}{dt} = B_z + \beta_z \left( \frac{1}{1 + \textcolor{cyan}{\overset{*}{X}} / K_{xz} + \textcolor{DarkOrchid}{\overset{*}{Y}} / K_{yz}} \right)^H \left( \frac{1}{1 + \textcolor{DarkOrchid}{\overset{*}{Y}} / K_{yz} + \textcolor{cyan}{\overset{*}{X}} / K_{xz}} \right)^H - \alpha_z \, Z(t)")
-OR_C4 = st.latex(r"OR\,\,Coherent \,\,4:\quad \frac{dY}{dt} = B_y + \beta_y \left( \frac{1}{1 + \textcolor{cyan}{\overset{*}{X}} / K_{xy}} \right)^H - \alpha_y \, Y(t) \qquad \qquad \frac{dZ}{dt} = B_z + \beta_z \left( \frac{\textcolor{cyan}{\overset{*}{X}} / K_{xz}}{1 + \textcolor{cyan}{\overset{*}{X}} / K_{xz} + \textcolor{DarkOrchid}{\overset{*}{Y}} / K_{yz}} \right)^H \left( \frac{1}{1 + \textcolor{DarkOrchid}{\overset{*}{Y}} / K_{yz} + \textcolor{cyan}{\overset{*}{X}} / K_{xz}} \right)^H - \alpha_z \, Z(t)")
-st.latex("")
-st.latex("")
-AND_C1 = st.latex(r"AND\,\,Coherent \,\,1:\quad \frac{dY}{dt} = B_y + \beta_y \left( \frac{\textcolor{cyan}{\overset{*}{X}} / K_{xy}}{1 + \textcolor{cyan}{\overset{*}{X}} / K_{xy}} \right)^H - \alpha_y \, Y(t) \qquad \qquad \frac{dZ}{dt} = B_z + \beta_z \left( \frac{\textcolor{cyan}{\overset{*}{X}} / K_{xz}}{1 + \textcolor{cyan}{\overset{*}{X}} / K_{xz}} \right)^H \left( \frac{\textcolor{DarkOrchid}{\overset{*}{Y}} / K_{yz}}{1 + \textcolor{DarkOrchid}{\overset{*}{Y}} / K_{yz}} \right)^H - \alpha_z \, Z(t)")
-AND_C2 = st.latex(r"AND\,\,Coherent \,\,2:\quad \frac{dY}{dt} = B_y + \beta_y \left( \frac{1}{1 + \textcolor{cyan}{\overset{*}{X}} / K_{xy}} \right)^H - \alpha_y \, Y(t) \qquad \qquad \frac{dZ}{dt} = B_z + \beta_z \left( \frac{1}{1 + \textcolor{cyan}{\overset{*}{X}} / K_{xz}} \right)^H \left( \frac{\textcolor{DarkOrchid}{\overset{*}{Y}} / K_{yz}}{1 + \textcolor{DarkOrchid}{\overset{*}{Y}} / K_{yz}} \right)^H - \alpha_z \, Z(t)")
-AND_C3 = st.latex(r"AND\,\,Coherent \,\,3:\quad \frac{dY}{dt} = B_y + \beta_y \left( \frac{\textcolor{cyan}{\overset{*}{X}} / K_{xy}}{1 + \textcolor{cyan}{\overset{*}{X}} / K_{xy}} \right)^H - \alpha_y \, Y(t) \qquad \qquad \frac{dZ}{dt} = B_z + \beta_z \left( \frac{1}{1 + \textcolor{cyan}{\overset{*}{X}} / K_{xz}} \right)^H \left( \frac{1}{1 + \textcolor{DarkOrchid}{\overset{*}{Y}} / K_{yz}} \right)^H - \alpha_z \, Z(t)")
-AND_C4 = st.latex(r"AND\,\,Coherent \,\,4:\quad \frac{dY}{dt} = B_y + \beta_y \left( \frac{1}{1 + \textcolor{cyan}{\overset{*}{X}} / K_{xy}} \right)^H - \alpha_y \, Y(t) \qquad \qquad \frac{dZ}{dt} = B_z + \beta_z \left( \frac{\textcolor{cyan}{\overset{*}{X}} / K_{xz}}{1 + \textcolor{cyan}{\overset{*}{X}} / K_{xz}} \right)^H \left( \frac{1}{1 + \textcolor{DarkOrchid}{\overset{*}{Y}} / K_{yz}} \right)^H - \alpha_z \, Z(t)")
-st.latex("")
-st.latex("")
-AND_I1 = st.latex(r"AND\,\,Incoherent \,\,1:\quad \frac{dY}{dt} = B_y + \beta_y \left( \frac{\textcolor{orange}{\overset{*}{X}} / K_{xy}}{1 + \textcolor{orange}{\overset{*}{X}} / K_{xy}} \right)^H - \alpha_y \, Y(t) \qquad \qquad \frac{dZ}{dt} = B_z + \beta_z \left( \frac{\textcolor{orange}{\overset{*}{X}} / K_{xz}}{1 + \textcolor{orange}{\overset{*}{X}} / K_{xz}} \right)^H \left( \frac{1}{1 + \textcolor{lightgreen}{\overset{*}{Y}} / K_{yz}} \right)^H - \alpha_z \, Z(t)")
-AND_I2 = st.latex(r"AND\,\,Incoherent \,\,2:\quad \frac{dY}{dt} = B_y + \beta_y \left( \frac{1}{1 + \textcolor{orange}{\overset{*}{X}} / K_{xy}} \right)^H - \alpha_y \, Y(t) \qquad \qquad \frac{dZ}{dt} = B_z + \beta_z \left( \frac{1}{1 + \textcolor{orange}{\overset{*}{X}} / K_{xz}} \right)^H \left( \frac{1}{1 + \textcolor{lightgreen}{\overset{*}{Y}} / K_{yz}} \right)^H - \alpha_z \, Z(t)")
-AND_I3 = st.latex(r"AND\,\,Incoherent \,\,3:\quad \frac{dY}{dt} = B_y + \beta_y \left( \frac{\textcolor{orange}{\overset{*}{X}} / K_{xy}}{1 + \textcolor{orange}{\overset{*}{X}} / K_{xy}} \right)^H - \alpha_y \, Y(t) \qquad \qquad \frac{dZ}{dt} = B_z + \beta_z \left( \frac{1}{1 + \textcolor{orange}{\overset{*}{X}} / K_{xz}} \right)^H \left( \frac{\textcolor{lightgreen}{\overset{*}{Y}} / K_{yz}}{1 + \textcolor{lightgreen}{\overset{*}{Y}} / K_{yz}} \right)^H - \alpha_z \, Z(t)")
-AND_I4 = st.latex(r"AND\,\,Incoherent \,\,4:\quad \frac{dY}{dt} = B_y + \beta_y \left( \frac{1}{1 + \textcolor{orange}{\overset{*}{X}} / K_{xy}} \right)^H - \alpha_y \, Y(t) \qquad \qquad \frac{dZ}{dt} = B_z + \beta_z \left( \frac{\textcolor{orange}{\overset{*}{X}} / K_{xz}}{1 + \textcolor{orange}{\overset{*}{X}} / K_{xz}} \right)^H \left( \frac{\textcolor{lightgreen}{\overset{*}{Y}} / K_{yz}}{1 + \textcolor{lightgreen}{\overset{*}{Y}} / K_{yz}} \right)^H - \alpha_z \, Z(t)")
 
-    
