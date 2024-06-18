@@ -3,23 +3,20 @@ from scipy.integrate import solve_ivp
 import matplotlib.pyplot as plt
 import streamlit as st
 
-st.set_page_config(layout="wide")
 
-Y_check = st.checkbox('Y(t) anzeigen')
-#st.title("Feed Forward Loop")
-
-
-def streamlit():
+def interactivModel(eq_Xstar, eq_Ystar, dydt_eq_C1_OR, dydt_eq_C2_OR, dydt_eq_C3_OR, dydt_eq_C4_OR, dydt_eq_C1, dydt_eq_C2, dydt_eq_C3, dydt_eq_C4, dydt_eq_I1, dydt_eq_I2, dydt_eq_I3, dydt_eq_I4, dzdt_eq_C1_OR, dzdt_eq_C2_OR, dzdt_eq_C3_OR, dzdt_eq_C4_OR, dzdt_eq_C1, dzdt_eq_C2, dzdt_eq_C3, dzdt_eq_C4, dzdt_eq_I1, dzdt_eq_I2, dzdt_eq_I3, dzdt_eq_I4):
+    
+    Y_check = st.checkbox('Y(t) anzeigen')
     button = st.columns(10)
     AND_button = button[0].checkbox('AND GATE', value=True)
     OR_button = button[1].checkbox('OR GATE')
     C1_button = button[2].checkbox('C type 1', value=True)
-    C2_button = button[3].checkbox('C type 2', value=True)
-    C3_button = button[4].checkbox('C type 3', value=True)
+    C2_button = button[3].checkbox('C type 2')
+    C3_button = button[4].checkbox('C type 3')
     C4_button = button[5].checkbox('C type 4', value=True)
     I1_button = button[6].checkbox('I type 1', value=True)
-    I2_button = button[7].checkbox('I type 2', value=True)
-    I3_button = button[8].checkbox('I type 3', value=True)
+    I2_button = button[7].checkbox('I type 2')
+    I3_button = button[8].checkbox('I type 3')
     I4_button = button[9].checkbox('I type 4', value=True)
 
 
@@ -85,11 +82,13 @@ def streamlit():
         with eq:
             st.latex(eq_Xstar + r"\\" + eq_Ystar)
         with dgl: 
-            st.latex(eq_Ystar + dydt_eq_I4 + r"\qquad \qquad"+ dzdt_eq_I4)
+            st.latex(dydt_eq_I4 + r"\qquad \qquad"+ dzdt_eq_I4)
 
 
 
-    params, PLOT = st.columns([2,2])
+
+
+    params, plot = st.columns([2,2])
     with params:
         slider1, slider2 = st.columns(2)
         
@@ -100,22 +99,21 @@ def streamlit():
             betaz = st.slider("$\Large \\beta_z$", 0.1, 10.0, 1.0)
             By = st.slider("$\Large B_y$ - Basal expression ", 0.0, 10.0, 0.0)
             Bz = st.slider("$\Large B_z$", 0.0, 10.0, 0.0)
-            tx = st.slider("$\Large t_{S_x}$", 0.0, 30.00, 7.00)
-            t_regler = st.slider("$\Large t$ - time", 0.0, 30.0, 10.0)
+            tx_slider = st.slider("$\Large t_{S_x}$", 0.0, 30.00, 7.00)
+            t_slider = st.slider("$\Large t$ - time", 0.0, 30.0, 10.0)
               
         with slider2:
             Kxy = st.slider("$\Large K_{xy}$ - Equilibrium constant", 0.01, 5.0, 0.1)
             Kxz = st.slider("$\Large K_{xz}$", 0.01, 5.0, 0.1)
             Kyz = st.slider("$\Large K_{yz}$", 0.01, 5.0, 0.5)
             H = st.slider("$\Large H$ - Hill coefficient", 0.1, 200.0, 2.0)
-            Sx = st.slider("$\Large S_x$", min_value=0.01, max_value=10.0, value=1.0, step=0.1)
-            Sy = st.slider("$\Large S_y$", 0.01, 10.0, 1.0)
-            ty = st.slider("$\Large t_{S_y}$", 0.0, 20.00, 20.00)
+            Sx_slider = st.slider("$\Large S_x$", min_value=0.01, max_value=10.0, value=1.0, step=0.1)
+            Sy_slider = st.slider("$\Large S_y$", 0.01, 10.0, 1.0)
+            ty_slider = st.slider("$\Large t_{S_y}$", 0.0, 20.00, 20.00)
 
 
             
-
-    with PLOT:
+    with plot:
         # Hill Functions
         def f_activator(u, K, H):
             return (u/K)**H / (1 + (u/K)**H)
@@ -129,7 +127,7 @@ def streamlit():
         def f(x_star, Kxy, H):
             if C1_button:
                 return f_activator(x_star, Kxy, H)
-            if C2_button:
+            elif C2_button:
                 return f_repressor(x_star, Kxy, H)
             elif C3_button:
                 return f_activator(x_star, Kxy, H)                        
@@ -150,7 +148,7 @@ def streamlit():
         def G(x_star, Kxz, y_star, Kyz, H):
             if AND_button and C1_button:
                 return f_activator(x_star, Kxz, H) * f_activator(y_star, Kyz, H)
-            if AND_button and C2_button:
+            elif AND_button and C2_button:
                 return f_repressor(x_star, Kxz, H) * f_activator(y_star, Kyz, H)
             elif AND_button and C3_button:
                 return f_repressor(x_star, Kxz, H) * f_repressor(y_star, Kyz, H)                     
@@ -195,42 +193,41 @@ def streamlit():
             x, y, z = initial_values
             x_star = Sx(t)
             y_star = Sy(t)
-            #Kxz = 1
+            Kxz = 1
             dzdt = Bz + betaz * G(x_star, Kxz, y_star, Kyz, H) - alphaz * z
             return [dzdt]
      
-        tx_end = tx
-        Sx_regler = float(Sx)
+        tx_end = float(tx_slider)
+        Sx_val = float(Sx_slider)
         def Sx(t):
             if 1 < t < tx_end:
-                return Sx_regler
+                return Sx_val
             else:
                 return 0
 
-        ty_end = ty
-        Sy_regler = float(Sy)
+        ty_end = float(ty_slider)
+        Sy_val = float(Sy_slider)
         def Sy(t):
             if 1 < t < ty_end:
-                return Sy_regler
+                return Sy_val
             else:
                 return 0            
         
-        t_end = t_regler
+        t_end = float(t_slider) 
         t_span = (0, t_end)
         t_eval = np.linspace(0, t_end, 1000)
 
-        initial_values = [Sx_regler, By, Bz]
+        initial_values = [Sx_val, By, Bz]
 
         solution_y = solve_ivp(ODE_Y, t_span, initial_values, t_eval=t_eval, method='Radau', args=(By, betay, Kxy, H, alphay))
-        solution_z_simple_reg = solve_ivp(ODE_Z_simple_reg, t_span, initial_values, t_eval=t_eval, method='Radau', args=(Bz, betaz, Kxz, Kyz, H, alphaz))
-        z_max = np.max(solution_z_simple_reg.y[-1])
         solution_z = solve_ivp(ODE_Z, t_span, initial_values, t_eval=solution_y.t, method='Radau', args=(Bz, betaz, Kxz, Kyz, H, alphaz))
-
+        z_max_FFL = np.max(solution_z.y[-1])
+        solution_z_simple_reg = solve_ivp(ODE_Z_simple_reg, t_span, initial_values, t_eval=t_eval, method='Radau', args=(Bz, betaz, Kxz, Kyz, H, alphaz))
+        z_max_simple = np.max(solution_z_simple_reg.y[-1])
 
 
         # Plot
         fig, ax = plt.subplots(2, 1, figsize=(8, 9), gridspec_kw={'height_ratios': [0.15, 0.85]})
-
 
         Sx_vals = [Sx(t) for t in t_eval]
         Sy_vals = [Sy(t) for t in t_eval]
@@ -238,36 +235,42 @@ def streamlit():
         ax[0].plot(t_eval, Sy_vals, label='$S_y$', color='DarkOrchid')
         #ax[0].set_ylabel('$S_x$', rotation=360, fontsize="15")
         ax[0].set_xticks([])
-        ax[0].set_yticks(np.arange(0, Sx_regler+0.1, 1))
-        ax[0].set_yticks(np.arange(0, Sy_regler+0.1, 1))
+        ax[0].set_yticks(np.arange(0, Sx_slider+0.1, 1))
+        ax[0].set_yticks(np.arange(0, Sy_slider+0.1, 1))
         ax[0].legend(fontsize='14', frameon=False)
 
         ax[1].axvline(x=tx_end + np.log(2)/alphaz, color='k', linestyle='--', linewidth=1) 
         ax[1].axvline(x=1, color='k', linestyle='--', linewidth=1)
         ax[1].axvline(x=tx_end, color='k', linestyle='--', linewidth=1)
-        if 2.0 * z_max != 0:
-            ax[1].axvline(x=tx_end + np.log(2)/alphaz, color='k', linestyle='--', linewidth=1) 
-            ax[1].axhline(y=z_max/2.0, color='k', linestyle='--', linewidth=1)
-            ax[1].text(x=0, y=z_max/2.0, s='1/2 max_FFL', fontsize=12, va='center', ha='left', backgroundcolor='w')
-            ax[1].axhline(y=0, color='k', linestyle='--', linewidth=1)
-            ax[1].axhline(y=np.max(solution_z_simple_reg.y[-1]/z_max), color='k', linestyle='--', linewidth=1)
-
+        ax[1].axvline(x=tx_end + np.log(2)/alphaz, color='k', linestyle='--', linewidth=1) 
+        ax[1].axhline(y=z_max_FFL/(2.0*z_max_simple), color='k', linestyle='--', linewidth=1)
+        ax[1].text(x=0, y=z_max_FFL/(2.0*z_max_simple), s='1/2 max_FFL', fontsize=12, va='center', ha='left', backgroundcolor='w')
+        ax[1].axhline(y=0, color='k', linestyle='--', linewidth=1)
+        ax[1].axhline(y=np.max(solution_z_simple_reg.y[-1])/z_max_simple, color='k', linestyle='--', linewidth=1)
         if Y_check:
             ax[1].plot(solution_y.t, solution_y.y[-1], label='Y(t)', color= 'green')
-        ax[1].plot(solution_z_simple_reg.t, solution_z_simple_reg.y[-1], label='$Z(t)_{simple}$')
+        ax[1].plot(solution_z_simple_reg.t, solution_z_simple_reg.y[-1]/z_max_simple, label='$Z(t)_{simple}$')
         ax[1].plot(solution_z.t, solution_z.y[-1], label='$Z(t)_{FFL}$')
         ax[1].set_ylim(-0.3, 1.8)
         ax[1].set_xlabel('time [t]', fontsize="15")
-        ax[1].set_ylabel('Z', rotation=360, fontsize="15")
+        #ax[1].set_ylabel('Z', rotation=360, fontsize="15")
         ax[1].set_xticks([tx_end + np.log(2)/alphaz])
         ax[1].set_xticklabels([r"$\tau = \frac{\ln(2)}{\alpha_z}$"], fontsize=15)
-        ax[1].set_yticks(np.arange(0, 1.1, 1))
+        ax[1].set_yticks([0,  1])
         ax[1].legend(fontsize='13', frameon=False)
 
         st.pyplot(fig)
 
 
+
+
+
+
+
 def main():
+    st.set_page_config(layout="wide")
+
+    st.title("Feed Forward Loop")
 
     #dYdt
     dydt_eq_C1_OR = r"\frac{dY}{dt} = B_y + \beta_y \left( \frac{\textcolor{orange}{\overset{*}{X}} / K_{xy}}{1 + \textcolor{orange}{\overset{*}{X}} / K_{xy}} \right)^H - \alpha_y \, Y(t)"
@@ -304,6 +307,7 @@ def main():
     eq_Xstar = r"\textcolor{orange}{\overset{*}{X}} = S_x"
     eq_Ystar = r"\textcolor{DarkOrchid}{\overset{*}{Y}}= S_y \cdot Y(t)"
 
-    streamlit(dydt_eq_C1_OR, dydt_eq_C2_OR, dydt_eq_C3_OR, dydt_eq_C4_OR, dydt_eq_C1, dydt_eq_C2, dydt_eq_C3, dydt_eq_C4, dydt_eq_I1, )
+    interactivModel(eq_Xstar, eq_Ystar, dydt_eq_C1_OR, dydt_eq_C2_OR, dydt_eq_C3_OR, dydt_eq_C4_OR, dydt_eq_C1, dydt_eq_C2, dydt_eq_C3, dydt_eq_C4, dydt_eq_I1, dydt_eq_I2, dydt_eq_I3, dydt_eq_I4, dzdt_eq_C1_OR, dzdt_eq_C2_OR, dzdt_eq_C3_OR, dzdt_eq_C4_OR, dzdt_eq_C1, dzdt_eq_C2, dzdt_eq_C3, dzdt_eq_C4, dzdt_eq_I1, dzdt_eq_I2, dzdt_eq_I3, dzdt_eq_I4)
+
 if __name__ == '__main__':
     main()    
