@@ -6,20 +6,22 @@ import streamlit as st
 
 def interactivModel(eq_Xstar, eq_Ystar, dydt_eq_C1_OR, dydt_eq_C2_OR, dydt_eq_C3_OR, dydt_eq_C4_OR, dydt_eq_C1, dydt_eq_C2, dydt_eq_C3, dydt_eq_C4, dydt_eq_I1, dydt_eq_I2, dydt_eq_I3, dydt_eq_I4, dzdt_eq_C1_OR, dzdt_eq_C2_OR, dzdt_eq_C3_OR, dzdt_eq_C4_OR, dzdt_eq_C1, dzdt_eq_C2, dzdt_eq_C3, dzdt_eq_C4, dzdt_eq_I1, dzdt_eq_I2, dzdt_eq_I3, dzdt_eq_I4):
     
+    # CHECKBOXs
     Y_check = st.checkbox('Y(t) anzeigen')
+    normalize = st.checkbox(r'Normalisieren bzgl. $Z(t)_{simple}$')
     button = st.columns(10)
-    AND_button = button[0].checkbox('AND GATE', value=True)
-    OR_button = button[1].checkbox('OR GATE')
-    C1_button = button[2].checkbox('C type 1', value=True)
-    C2_button = button[3].checkbox('C type 2')
-    C3_button = button[4].checkbox('C type 3')
-    C4_button = button[5].checkbox('C type 4', value=True)
-    I1_button = button[6].checkbox('I type 1', value=True)
-    I2_button = button[7].checkbox('I type 2')
-    I3_button = button[8].checkbox('I type 3')
-    I4_button = button[9].checkbox('I type 4', value=True)
+    AND_button = button[0].checkbox('AND', value=True)
+    OR_button = button[1].checkbox('OR')
+    C1_button = button[2].checkbox('C1', value=True)
+    C2_button = button[3].checkbox('C2')
+    C3_button = button[4].checkbox('C3')
+    C4_button = button[5].checkbox('C4', value=True)
+    I1_button = button[6].checkbox('I1', value=True)
+    I2_button = button[7].checkbox('I2')
+    I3_button = button[8].checkbox('I3')
+    I4_button = button[9].checkbox('I4', value=True)
 
-
+    # Gleichung mit Checkbox auswählen
     eq, dgl = st.columns([1,7])
     if OR_button and C1_button:
         with eq:
@@ -86,8 +88,7 @@ def interactivModel(eq_Xstar, eq_Ystar, dydt_eq_C1_OR, dydt_eq_C2_OR, dydt_eq_C3
 
 
 
-
-
+    # Paramter slider
     params, plot = st.columns([2,2])
     with params:
         slider1, slider2 = st.columns(2)
@@ -112,7 +113,7 @@ def interactivModel(eq_Xstar, eq_Ystar, dydt_eq_C1_OR, dydt_eq_C2_OR, dydt_eq_C3
             ty_slider = st.slider("$\Large t_{S_y}$", 0.0, 20.00, 20.00)
 
 
-            
+    # Plot
     with plot:
         # Hill Functions
         def f_activator(u, K, H):
@@ -124,27 +125,7 @@ def interactivModel(eq_Xstar, eq_Ystar, dydt_eq_C1_OR, dydt_eq_C2_OR, dydt_eq_C3
         def fc_repressor(u, Ku, Kv, v, H):
             return 1 / (1 + (u/Ku)**H + (v/Kv)**H)    
 
-        def f(x_star, Kxy, H):
-            if C1_button:
-                return f_activator(x_star, Kxy, H)
-            elif C2_button:
-                return f_repressor(x_star, Kxy, H)
-            elif C3_button:
-                return f_activator(x_star, Kxy, H)                        
-            elif C4_button:
-                return f_repressor(x_star, Kxy, H)
-
-            elif I1_button:
-                return f_activator(x_star, Kxy, H)
-            elif I2_button:
-                return f_repressor(x_star, Kxy, H)                      
-            elif I3_button:
-                return f_activator(x_star, Kxy, H)
-            elif I4_button:
-                return f_repressor(x_star, Kxy, H)
-            else:
-                return 0    
-
+            
         def G(x_star, Kxz, y_star, Kyz, H):
             if AND_button and C1_button:
                 return f_activator(x_star, Kxz, H) * f_activator(y_star, Kyz, H)
@@ -175,6 +156,27 @@ def interactivModel(eq_Xstar, eq_Ystar, dydt_eq_C1_OR, dydt_eq_C2_OR, dydt_eq_C3
             else:
                 return 0
 
+        def f(x_star, Kxy, H):
+            if C1_button:
+                return f_activator(x_star, Kxy, H)
+            elif C2_button:
+                return f_repressor(x_star, Kxy, H)
+            elif C3_button:
+                return f_activator(x_star, Kxy, H)                        
+            elif C4_button:
+                return f_repressor(x_star, Kxy, H)
+
+            elif I1_button:
+                return f_activator(x_star, Kxy, H)
+            elif I2_button:
+                return f_repressor(x_star, Kxy, H)                      
+            elif I3_button:
+                return f_activator(x_star, Kxy, H)
+            elif I4_button:
+                return f_repressor(x_star, Kxy, H)
+            else:
+                return 0    
+
 
         def ODE_Y(t, initial_values, By, betay, Kxy, H, alphay):
             x, y, z = initial_values  # unpack x,y,z
@@ -185,7 +187,7 @@ def interactivModel(eq_Xstar, eq_Ystar, dydt_eq_C1_OR, dydt_eq_C2_OR, dydt_eq_C3
         def ODE_Z(t, initial_values, Bz, betaz, Kxz, Kyz, H, alphaz):
             x, y, z = initial_values
             x_star = Sx(t)
-            y_star = Sy(t) * np.interp(t, solution_y.t, solution_y.y[-1]) # make y continuous    
+            y_star = Sy(t) * np.interp(t, solution_y.t, solution_y.y[-1]) # make y continuous
             dzdt = Bz + betaz * G(x_star, Kxz, y_star, Kyz, H) - alphaz * z
             return [dzdt]
 
@@ -193,7 +195,7 @@ def interactivModel(eq_Xstar, eq_Ystar, dydt_eq_C1_OR, dydt_eq_C2_OR, dydt_eq_C3
             x, y, z = initial_values
             x_star = Sx(t)
             y_star = Sy(t)
-            Kxz = 1
+            #Kxz = 1
             dzdt = Bz + betaz * G(x_star, Kxz, y_star, Kyz, H) - alphaz * z
             return [dzdt]
      
@@ -221,8 +223,10 @@ def interactivModel(eq_Xstar, eq_Ystar, dydt_eq_C1_OR, dydt_eq_C2_OR, dydt_eq_C3
 
         solution_y = solve_ivp(ODE_Y, t_span, initial_values, t_eval=t_eval, method='Radau', args=(By, betay, Kxy, H, alphay))
         solution_z = solve_ivp(ODE_Z, t_span, initial_values, t_eval=solution_y.t, method='Radau', args=(Bz, betaz, Kxz, Kyz, H, alphaz))
-        z_max_FFL = np.max(solution_z.y[-1])
         solution_z_simple_reg = solve_ivp(ODE_Z_simple_reg, t_span, initial_values, t_eval=t_eval, method='Radau', args=(Bz, betaz, Kxz, Kyz, H, alphaz))
+
+        decay_start = np.searchsorted(solution_z.t, tx_end, side='left')
+        z_max_FFL = np.max(solution_z.y[-1][decay_start:])
         z_max_simple = np.max(solution_z_simple_reg.y[-1])
 
 
@@ -239,18 +243,30 @@ def interactivModel(eq_Xstar, eq_Ystar, dydt_eq_C1_OR, dydt_eq_C2_OR, dydt_eq_C3
         ax[0].set_yticks(np.arange(0, Sy_slider+0.1, 1))
         ax[0].legend(fontsize='14', frameon=False)
 
+
+        if Y_check:
+            ax[1].plot(solution_y.t, solution_y.y[-1], label='Y(t)', color= 'green')
+
+        if normalize and z_max_simple != 0:
+            ax[1].plot(solution_z_simple_reg.t, solution_z_simple_reg.y[-1]/z_max_simple, label='$Z(t)_{simple}$')
+            ax[1].plot(solution_z.t, solution_z.y[-1]/z_max_simple, label='$Z(t)_{FFL}$')
+            ax[1].axhline(y=z_max_FFL/(2.0 * z_max_simple), color='k', linestyle='--', linewidth=1)
+            ax[1].text(x=0, y=z_max_FFL/(2.0 * z_max_simple), s='1/2 max_FFL', fontsize=12, va='center', ha='left', backgroundcolor='w')
+        else:
+            ax[1].plot(solution_z_simple_reg.t, solution_z_simple_reg.y[-1], label='$Z(t)_{simple}$')
+            ax[1].plot(solution_z.t, solution_z.y[-1], label='$Z(t)_{FFL}$')
+            ax[1].axhline(y=z_max_FFL/2.0, color='k', linestyle='--', linewidth=1)
+            ax[1].text(x=0, y=z_max_FFL/2.0, s='1/2 max_FFL', fontsize=12, va='center', ha='left', backgroundcolor='w')
+
+        if z_max_simple != 0:
+            ax[1].axhline(y=np.max(solution_z_simple_reg.y[-1])/z_max_simple, color='k', linestyle='--', linewidth=1)
+
         ax[1].axvline(x=tx_end + np.log(2)/alphaz, color='k', linestyle='--', linewidth=1) 
         ax[1].axvline(x=1, color='k', linestyle='--', linewidth=1)
         ax[1].axvline(x=tx_end, color='k', linestyle='--', linewidth=1)
         ax[1].axvline(x=tx_end + np.log(2)/alphaz, color='k', linestyle='--', linewidth=1) 
-        ax[1].axhline(y=z_max_FFL/(2.0*z_max_simple), color='k', linestyle='--', linewidth=1)
-        ax[1].text(x=0, y=z_max_FFL/(2.0*z_max_simple), s='1/2 max_FFL', fontsize=12, va='center', ha='left', backgroundcolor='w')
         ax[1].axhline(y=0, color='k', linestyle='--', linewidth=1)
-        ax[1].axhline(y=np.max(solution_z_simple_reg.y[-1])/z_max_simple, color='k', linestyle='--', linewidth=1)
-        if Y_check:
-            ax[1].plot(solution_y.t, solution_y.y[-1], label='Y(t)', color= 'green')
-        ax[1].plot(solution_z_simple_reg.t, solution_z_simple_reg.y[-1]/z_max_simple, label='$Z(t)_{simple}$')
-        ax[1].plot(solution_z.t, solution_z.y[-1], label='$Z(t)_{FFL}$')
+
         ax[1].set_ylim(-0.3, 1.8)
         ax[1].set_xlabel('time [t]', fontsize="15")
         #ax[1].set_ylabel('Z', rotation=360, fontsize="15")
@@ -267,7 +283,7 @@ def interactivModel(eq_Xstar, eq_Ystar, dydt_eq_C1_OR, dydt_eq_C2_OR, dydt_eq_C3
 
 
 
-def main():
+def setup():
     st.set_page_config(layout="wide")
 
     st.title("Feed Forward Loop")
@@ -309,5 +325,5 @@ def main():
 
     interactivModel(eq_Xstar, eq_Ystar, dydt_eq_C1_OR, dydt_eq_C2_OR, dydt_eq_C3_OR, dydt_eq_C4_OR, dydt_eq_C1, dydt_eq_C2, dydt_eq_C3, dydt_eq_C4, dydt_eq_I1, dydt_eq_I2, dydt_eq_I3, dydt_eq_I4, dzdt_eq_C1_OR, dzdt_eq_C2_OR, dzdt_eq_C3_OR, dzdt_eq_C4_OR, dzdt_eq_C1, dzdt_eq_C2, dzdt_eq_C3, dzdt_eq_C4, dzdt_eq_I1, dzdt_eq_I2, dzdt_eq_I3, dzdt_eq_I4)
 
-if __name__ == '__main__':
-    main()    
+
+setup()    

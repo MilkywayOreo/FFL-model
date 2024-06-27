@@ -34,15 +34,15 @@ def ODE_Y(t, initial_values, By, betay, Kxy, H, alphay):
 def ODE_Z(t, initial_values, Bz, betaz, Kxz, Kyz, H, alphaz):
     x, y, z = initial_values
     x_star = Sx(t)
-    y_star = np.interp(t, solution_y.t, solution_y.y[-1]) # make y continuous    
-    dzdt = Bz + betaz * f_activator(x_star, Kxz, H) * f_repressor(y_star, Kyz, H) - alphaz * z
+    y_star = Sy(t) * np.interp(t, solution_y.t, solution_y.y[-1]) # make y continuous    
+    dzdt = Bz + betaz * (fc_activator(x_star, Kxz, Kyz, y_star, H) + fc_activator(y_star, Kyz, Kxz, x_star, H)) - alphaz * z
     return [dzdt]
 
 def ODE_Z_simple_reg(t, initial_values, Bz, betaz, Kxz, Kyz, H, alphaz):
     x, y, z = initial_values
     x_star = Sx(t)
-    y_star = 1
-    dzdt = Bz + betaz * f_activator(x_star, Kxz, H) * f_repressor(y_star, Kyz, H) - alphaz * z
+    y_star = Sy(t)
+    dzdt = Bz + betaz * (fc_activator(x_star, Kxz, Kyz, y_star, H) + fc_activator(y_star, Kyz, Kxz, x_star, H)) - alphaz * z
     return [dzdt]
 
 # time switch
@@ -53,7 +53,7 @@ def Sx(t):
         return 0
 
 def Sy(t):
-    if 1 < t < 7:
+    if 1 < t < 30:
         return 1
     else:
         return 0
