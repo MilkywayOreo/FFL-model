@@ -7,6 +7,7 @@ import streamlit as st
 def interactivModel(eq_Xstar, eq_Ystar, dydt_eq_C1_OR, dydt_eq_C2_OR, dydt_eq_C3_OR, dydt_eq_C4_OR, dydt_eq_C1, dydt_eq_C2, dydt_eq_C3, dydt_eq_C4, dydt_eq_I1, dydt_eq_I2, dydt_eq_I3, dydt_eq_I4, dzdt_eq_C1_OR, dzdt_eq_C2_OR, dzdt_eq_C3_OR, dzdt_eq_C4_OR, dzdt_eq_C1, dzdt_eq_C2, dzdt_eq_C3, dzdt_eq_C4, dzdt_eq_I1, dzdt_eq_I2, dzdt_eq_I3, dzdt_eq_I4):
     
     # CHECKBOXs
+    AND_C1_simple = st.checkbox('AND_C1_simple')
     Y_check = st.checkbox('Y(t) anzeigen')
     normalize = st.checkbox(r'Normalisieren bzgl. $Z(t)_{simple}$')
     button = st.columns(10)
@@ -189,6 +190,8 @@ def interactivModel(eq_Xstar, eq_Ystar, dydt_eq_C1_OR, dydt_eq_C2_OR, dydt_eq_C3
             x_star = Sx(t)
             y_star = Sy(t) * np.interp(t, solution_y.t, solution_y.y[-1]) # make y continuous
             dzdt = Bz + betaz * G(x_star, Kxz, y_star, Kyz, H) - alphaz * z
+            # dzdt = Bz + betaz * (fc_activator(x_star, Kxz, Kyz, y_star, H) + fc_activator(y_star, Kyz, Kxz, x_star, H)) - alphaz * z
+
             return [dzdt]
 
         def ODE_Z_simple_reg(t, initial_values, Bz, betaz, Kxz, Kyz, H, alphaz):
@@ -196,7 +199,11 @@ def interactivModel(eq_Xstar, eq_Ystar, dydt_eq_C1_OR, dydt_eq_C2_OR, dydt_eq_C3
             x_star = Sx(t)
             y_star = Sy(t)
             #Kxz = 1
-            dzdt = Bz + betaz * G(x_star, Kxz, y_star, Kyz, H) - alphaz * z
+            if AND_C1_simple:
+                dzdt = Bz + betaz * (f_activator(x_star, Kxz, H) * f_activator(y_star, Kyz, H)) - alphaz * z
+            else:
+                dzdt = Bz + betaz * G(x_star, Kxz, y_star, Kyz, H) - alphaz * z
+
             return [dzdt]
      
         tx_end = float(tx_slider)
@@ -219,7 +226,7 @@ def interactivModel(eq_Xstar, eq_Ystar, dydt_eq_C1_OR, dydt_eq_C2_OR, dydt_eq_C3
         t_span = (0, t_end)
         t_eval = np.linspace(0, t_end, 1000)
 
-        initial_values = [Sx_val, By, Bz]
+        initial_values = [Sx_val, 0, 0]
 
         solution_y = solve_ivp(ODE_Y, t_span, initial_values, t_eval=t_eval, method='Radau', args=(By, betay, Kxy, H, alphay))
         solution_z = solve_ivp(ODE_Z, t_span, initial_values, t_eval=solution_y.t, method='Radau', args=(Bz, betaz, Kxz, Kyz, H, alphaz))
@@ -259,13 +266,13 @@ def interactivModel(eq_Xstar, eq_Ystar, dydt_eq_C1_OR, dydt_eq_C2_OR, dydt_eq_C3
             ax[1].text(x=0, y=z_max_FFL/2.0, s='1/2 max_FFL', fontsize=12, va='center', ha='left', backgroundcolor='w')
 
         if z_max_simple != 0:
-            ax[1].axhline(y=np.max(solution_z_simple_reg.y[-1])/z_max_simple, color='k', linestyle='--', linewidth=1)
+            ax[1].axhline(y=np.max(solution_z_simple_reg.y[-1])/z_max_simple, color='gray', linestyle='--', linewidth=1)
 
+        ax[1].axvline(x=tx_end + np.log(2)/alphaz, color='gray', linestyle='--', linewidth=1) 
+        ax[1].axvline(x=1, color='gray', linestyle='--', linewidth=1)
+        ax[1].axvline(x=tx_end, color='gray', linestyle='--', linewidth=1)
         ax[1].axvline(x=tx_end + np.log(2)/alphaz, color='k', linestyle='--', linewidth=1) 
-        ax[1].axvline(x=1, color='k', linestyle='--', linewidth=1)
-        ax[1].axvline(x=tx_end, color='k', linestyle='--', linewidth=1)
-        ax[1].axvline(x=tx_end + np.log(2)/alphaz, color='k', linestyle='--', linewidth=1) 
-        ax[1].axhline(y=0, color='k', linestyle='--', linewidth=1)
+        ax[1].axhline(y=0, color='gray', linestyle='--', linewidth=1)
 
         ax[1].set_ylim(-0.3, 1.8)
         ax[1].set_xlabel('time [t]', fontsize="15")
